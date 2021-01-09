@@ -1,52 +1,139 @@
 import { NextPageContext } from "next";
 import { getSession } from "next-auth/client";
 import Nav from "../components/nav";
+import axios from "axios";
+import Article from "../components/article/Article";
+import ArticleTitle from "../components/article/ArticleTitle";
+import { Grid, Text } from "@chakra-ui/react";
+import PlaylistItem from "../components/playlist/PlaylistItem";
+import { Chakra } from "../components/wrapper/Chakra";
+import Layout from "../components/layout/Layout";
 
-const NextAuth = ({ content, session }) => {
+const NextAuth = ({ content, session, cookies, error }) => {
+  if (error) {
+    return (
+      <Chakra cookies={cookies}>
+        <h1>{error}</h1>
+      </Chakra>
+    );
+  }
   // If no session exists, display access denied message
   if (!session) {
-    return <Nav />;
+    return (
+      <Chakra cookies={cookies}>
+        <Nav />
+      </Chakra>
+    );
   }
   console.log("content in client: ", content);
   // If session exists, display content
   return (
-    <>
-      <Nav />
-      <main>
-        <h1>NextAuth.js Demo</h1>
-      </main>
-    </>
+    <Chakra cookies={cookies}>
+      <Layout>
+        <Article>
+          <ArticleTitle title={"Playlists"} />
+          <Grid
+            as="section"
+            templateColumns="repeat(auto-fill,minmax(180px,1fr))"
+            width="100%"
+            gridColumnGap={"24px"}
+            gridRowGap={"12px"}
+          >
+            {content &&
+              content.items.map((playlist) => (
+                <PlaylistItem
+                  key={playlist.id}
+                  name={playlist.name}
+                  description={playlist.description}
+                  owner_name={playlist.owner.display_name}
+                  id={playlist.id}
+                  image={playlist.images[0].url}
+                />
+              ))}
+          </Grid>
+        </Article>
+        <Text fontSize="3xl">
+          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quod dolore
+          in dignissimos tempora nulla. Debitis, minima soluta, incidunt dicta
+          dolorem doloremque temporibus, quod numquam error alias eius neque
+          inventore officia! Lorem, ipsum dolor sit amet consectetur adipisicing
+          elit. Quod dolore in dignissimos tempora nulla. Debitis, minima
+          soluta, incidunt dicta dolorem doloremque temporibus, quod numquam
+          error alias eius neque inventore officia! Lorem, ipsum dolor sit amet
+          consectetur adipisicing elit. Quod dolore in dignissimos tempora
+          nulla. Debitis, minima soluta, incidunt dicta dolorem doloremque
+          temporibus, quod numquam error alias eius neque inventore officia!
+        </Text>
+      </Layout>
+    </Chakra>
   );
 };
 
 export async function getServerSideProps(ctx: NextPageContext) {
   const session = await getSession(ctx);
   let content = null;
-
+  const hostname = process.env.NEXTAUTH_URL || "http://localhost:3001";
   if (session && session.accessToken) {
-    // const hostname = process.env.NEXTAUTH_URL || "http://localhost:3001";
-    // const options = {
-    //   headers: {
-    //     cookie: ctx.req.headers.cookie,
-    //   },
-    // };
-    // const res = await fetch(`${hostname}/api/spotify/top/tracks`, options);
-    const res = await fetch("https://api.spotify.com/v1/me/top/tracks", {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + session.accessToken,
-      },
-    });
-    const json = await res.json();
-    if (json) {
-      content = json;
+    try {
+      const call = await axios.get("https://api.spotify.com/v1/me/playlists", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + session.accessToken,
+        },
+      });
+      const data = call.data;
+      if (data) {
+        content = data;
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        ctx.res.statusCode = 302;
+        ctx.res.setHeader("Location", `${hostname}/auth/signin`);
+        ctx.res.end();
+        return {
+          props: {},
+        };
+      } else {
+        return {
+          props: {
+            session,
+            content,
+            cookies: ctx.req.headers.cookie ?? "",
+            error: "Something happend",
+          },
+        };
+      }
     }
+    // const call = await axios.get("https://api.spotify.com/v1/me/playlists", {
+    //   method: "GET",
+    //   headers: {
+    //     Authorization: "Bearer " + session.accessToken,
+    //   },
+    // });
+    // if (call.status === 401) {
+    // ctx.res.statusCode = 302;
+    // ctx.res.setHeader("Location", `${hostname}/auth/signin`);
+    // ctx.res.end();
+    // } else {
+    //   const data = call.data;
+    // if (data) {
+    //   content = data;
+    // }
+    // }
+  } else {
+    ctx.res.statusCode = 302;
+    ctx.res.setHeader("Location", `${hostname}/auth/signin`);
+    ctx.res.end();
+    return {
+      props: {},
+    };
   }
 
   return {
     props: {
       session,
       content,
+      cookies: ctx.req.headers.cookie ?? "",
     },
   };
 }
