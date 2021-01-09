@@ -9,7 +9,8 @@ const options = {
     Providers.Spotify({
       clientId: process.env.SPOTIFY_CLIENT_ID,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-      scope: "user-read-private user-read-email user-top-read",
+      scope:
+        "user-read-private user-read-email user-top-read playlist-read-private",
     }),
   ],
 
@@ -20,7 +21,7 @@ const options = {
     // Note: `jwt` is automatically set to `true` if no database is specified.
     jwt: true,
     // Seconds - How long until an idle session expires and is no longer valid.
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    // maxAge: 30 * 24 * 60 * 60, // 30 days
     // Seconds - Throttle how frequently to write to database to extend a session.
     // Use it to limit write operations. Set to 0 to always update the database.
     // Note: This option is ignored if using JSON Web Tokens
@@ -99,7 +100,7 @@ const options = {
   // The routes shown here are the default URLs that will be used.
   // @link https://next-auth.js.org/configuration/pages
   pages: {
-    //signIn: '/api/auth/signin',
+    signIn: "/auth/signin",
     //signOut: '/api/auth/signout',
     //error: '/api/auth/error', // Error code passed in query string as ?error=
     //verifyRequest: '/api/auth/verify-request', // (used for check email message)

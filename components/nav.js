@@ -1,4 +1,5 @@
-import { signin, signout, useSession } from "next-auth/client";
+import { Button, useColorMode } from "@chakra-ui/react";
+import { signout, useSession, signIn } from "next-auth/client";
 import styles from "./nav.module.css";
 
 /**
@@ -8,6 +9,7 @@ import styles from "./nav.module.css";
  **/
 const Nav = () => {
   const [session, loading] = useSession();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <nav>
@@ -19,6 +21,9 @@ const Nav = () => {
           !session && loading ? styles.loading : styles.loaded
         }`}
       >
+        <Button onClick={toggleColorMode}>
+          Toggle {colorMode === "light" ? "Dark" : "Light"}
+        </Button>
         {!session && (
           <>
             <span className={styles.notSignedIn}>Not signed in</span>
@@ -26,7 +31,7 @@ const Nav = () => {
               href={`/api/auth/signin`}
               onClick={(e) => {
                 e.preventDefault();
-                signin();
+                signIn("spotify");
               }}
             >
               <button className={styles.signinButton}>Sign in</button>
