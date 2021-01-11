@@ -38,11 +38,19 @@ const PlaylistPage = ({ session, content, cookies }) => {
               width="232px"
               height="232px"
             />
-            <Flex ml={[0, 6]} height="100%" flexDir="column">
-              <Heading size="2xl" mt={[4, 0]}>
+            <Flex
+              ml={[0, 6]}
+              flexDir="column"
+              height="232px"
+              justifyContent="flex-end"
+              pb={4}
+              flex={2}
+              textAlign={["center", "left"]}
+            >
+              <Heading size="2xl" mt={[4, 0]} pb={3}>
                 {content.name}
               </Heading>
-              <Heading size="sm" mt={2} ml={1}>
+              <Heading size="sm" mt={2} ml={[0, 1]} pb={4}>
                 {content.description}
               </Heading>
               <StatGroup>

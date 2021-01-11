@@ -27,6 +27,7 @@ import { signout, useSession, signIn } from "next-auth/client";
 import Link from "next/link";
 import { useRef } from "react";
 import { IoLogoGithub, IoMoon, IoSunny, IoMenu } from "react-icons/io5";
+import { menuItems, MenuItem as NavItem } from "./Sidebar";
 import path from "./svgPath";
 interface HeaderProps {}
 
@@ -108,7 +109,7 @@ const Header: React.FC<HeaderProps> = () => {
                     </Link>
                     <IconButton
                       onClick={toggleColorMode}
-                      backgroundColor="transparent"
+                      variant="ghost"
                       aria-label="toggle theme"
                       opacity="0.8"
                       transition="opacity 0.2s"
@@ -126,13 +127,13 @@ const Header: React.FC<HeaderProps> = () => {
                       )}
                     </IconButton>
                     <Box
-                      display={["block", "none"]}
+                      display={["block", "block", "none"]}
                       ref={btnRef}
                       onClick={onOpen}
                     >
                       <IconButton
                         aria-label="menu"
-                        backgroundColor="transparent"
+                        variant="ghost"
                         opacity="0.8"
                         transition="opacity 0.2s"
                         _hover={{
@@ -147,7 +148,7 @@ const Header: React.FC<HeaderProps> = () => {
                     </Box>
                   </HStack>
 
-                  <Box display={["none", "block"]}>
+                  <Box display={["none", "none", "block"]}>
                     <Menu>
                       <MenuButton>
                         <Avatar
@@ -201,6 +202,11 @@ const Header: React.FC<HeaderProps> = () => {
                   <Text fontSize="sm">See your profile</Text>
                 </Box>
               </Flex>
+              <Box as="ul" listStyleType="none" pt={4}>
+                {menuItems.map((item, index) => (
+                  <NavItem key={index} item={item} />
+                ))}
+              </Box>
             </DrawerBody>
           </DrawerContent>
         </DrawerOverlay>
