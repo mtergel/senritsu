@@ -13,18 +13,23 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  useColorModeValue,
   CircularProgress,
+  Center,
+  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useSession } from "next-auth/client";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-const RecForm: React.FC = () => {
+
+interface RecFormProps {
+  submit: boolean;
+  setSubmit: (value: boolean) => void;
+  setTracks: (values: any[]) => void;
+}
+
+const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
   const [session, loading] = useSession();
   const { register, handleSubmit, errors, formState } = useForm();
-  const [tracks, setTracks] = useState(null);
-  const [submit, setSubmit] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onSubmit = async (formData) => {
@@ -89,8 +94,6 @@ const RecForm: React.FC = () => {
     }
   };
 
-  console.log(tracks);
-
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
@@ -98,7 +101,12 @@ const RecForm: React.FC = () => {
         <ModalContent>
           <ModalHeader>Generating</ModalHeader>
           <ModalBody>
-            {submit && <CircularProgress isIndeterminate color="green.500" />}
+            {submit && (
+              <Center>
+                <Text>Generating based on your preferences</Text>
+                <CircularProgress isIndeterminate color="green.500" />
+              </Center>
+            )}
           </ModalBody>
           {/* <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={onClose}>
@@ -108,88 +116,82 @@ const RecForm: React.FC = () => {
           </ModalFooter> */}
         </ModalContent>
       </Modal>
-      {tracks ? (
-        tracks.map((i) => <div key={i.id}>{i.name}</div>)
-      ) : (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormControl isInvalid={errors.name}>
-            <FormLabel htmlFor="energy">Relaxed - Energetic</FormLabel>
-            <Slider
-              aria-label="slider-ex-2"
-              colorScheme="pink"
-              defaultValue={0.5}
-              name="energy"
-              aria-labelledby="energy"
-              min={0}
-              max={1}
-              step={0.1}
-              ref={register}
-            >
-              <SliderTrack>
-                <SliderFilledTrack />
-              </SliderTrack>
-              <SliderThumb />
-            </Slider>
-            <FormErrorMessage>
-              {errors.name && errors.name.message}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={errors.name}>
-            <FormLabel htmlFor="danceability">Shy - Friendly</FormLabel>
-            <Slider
-              aria-label="slider-ex-2"
-              colorScheme="pink"
-              defaultValue={0.5}
-              name="danceability"
-              aria-labelledby="danceability"
-              min={0}
-              max={1}
-              step={0.1}
-              ref={register}
-            >
-              <SliderTrack>
-                <SliderFilledTrack />
-              </SliderTrack>
-              <SliderThumb />
-            </Slider>
-            <FormErrorMessage>
-              {errors.name && errors.name.message}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={errors.name}>
-            <FormLabel htmlFor="instrumentalness">
-              Apathetic - Curious
-            </FormLabel>
-            <Slider
-              aria-label="slider-ex-2"
-              colorScheme="pink"
-              defaultValue={0.5}
-              name="instrumentalness"
-              aria-labelledby="instrumentalness"
-              min={0}
-              max={1}
-              step={0.1}
-              ref={register}
-            >
-              <SliderTrack>
-                <SliderFilledTrack />
-              </SliderTrack>
-              <SliderThumb />
-            </Slider>
-            <FormErrorMessage>
-              {errors.name && errors.name.message}
-            </FormErrorMessage>
-          </FormControl>
-          <Button
-            mt={4}
-            colorScheme="teal"
-            isLoading={formState.isSubmitting}
-            type="submit"
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormControl isInvalid={errors.name}>
+          <FormLabel htmlFor="energy">Relaxed - Energetic</FormLabel>
+          <Slider
+            aria-label="slider-ex-2"
+            colorScheme="pink"
+            defaultValue={0.5}
+            name="energy"
+            aria-labelledby="energy"
+            min={0}
+            max={1}
+            step={0.1}
+            ref={register}
           >
-            Submit
-          </Button>
-        </form>
-      )}
+            <SliderTrack>
+              <SliderFilledTrack />
+            </SliderTrack>
+            <SliderThumb />
+          </Slider>
+          <FormErrorMessage>
+            {errors.name && errors.name.message}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={errors.name}>
+          <FormLabel htmlFor="danceability">Shy - Friendly</FormLabel>
+          <Slider
+            aria-label="slider-ex-2"
+            colorScheme="pink"
+            defaultValue={0.5}
+            name="danceability"
+            aria-labelledby="danceability"
+            min={0}
+            max={1}
+            step={0.1}
+            ref={register}
+          >
+            <SliderTrack>
+              <SliderFilledTrack />
+            </SliderTrack>
+            <SliderThumb />
+          </Slider>
+          <FormErrorMessage>
+            {errors.name && errors.name.message}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={errors.name}>
+          <FormLabel htmlFor="instrumentalness">Apathetic - Curious</FormLabel>
+          <Slider
+            aria-label="slider-ex-2"
+            colorScheme="pink"
+            defaultValue={0.5}
+            name="instrumentalness"
+            aria-labelledby="instrumentalness"
+            min={0}
+            max={1}
+            step={0.1}
+            ref={register}
+          >
+            <SliderTrack>
+              <SliderFilledTrack />
+            </SliderTrack>
+            <SliderThumb />
+          </Slider>
+          <FormErrorMessage>
+            {errors.name && errors.name.message}
+          </FormErrorMessage>
+        </FormControl>
+        <Button
+          mt={4}
+          colorScheme="teal"
+          isLoading={formState.isSubmitting}
+          type="submit"
+        >
+          Submit
+        </Button>
+      </form>
     </>
   );
 };
