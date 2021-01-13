@@ -1,0 +1,38 @@
+.track {
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: background-color ease 0.15s;
+}
+.track:hover {
+  background-color: hsla(0, 0%, 100%, 0.1);
+}
+.track:hover .preview {
+  display: flex;
+}
+
+.trackGrid {
+  display: grid;
+  grid-gap: 16px;
+  grid-template-columns: [index] 16px [first] 4fr [last] minmax(0px, 1fr);
+  height: 56px;
+  width: 100%;
+  padding: 8px 16px;
+}
+
+.preview {
+  display: none;
+  width: 100%;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  align-items: center;
+}
+
+.previewFlex {
+  display: flex;
+  width: 100%;
+}

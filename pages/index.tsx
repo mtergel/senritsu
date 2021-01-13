@@ -1,10 +1,9 @@
 import { NextPageContext } from "next";
 import { getSession } from "next-auth/client";
-import Nav from "../components/nav";
 import axios from "axios";
 import Article from "../components/article/Article";
 import ArticleTitle from "../components/article/ArticleTitle";
-import { Grid, Text } from "@chakra-ui/react";
+import { Grid } from "@chakra-ui/react";
 import PlaylistItem from "../components/playlist/PlaylistItem";
 import { Chakra } from "../components/wrapper/Chakra";
 import Layout from "../components/layout/Layout";
@@ -21,7 +20,7 @@ const NextAuth = ({ content, session, cookies, error }) => {
   if (!session) {
     return (
       <Chakra cookies={cookies}>
-        <Nav />
+        <div>Access denied</div>
       </Chakra>
     );
   }
@@ -52,18 +51,6 @@ const NextAuth = ({ content, session, cookies, error }) => {
               ))}
           </Grid>
         </Article>
-        <Text fontSize="3xl">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quod dolore
-          in dignissimos tempora nulla. Debitis, minima soluta, incidunt dicta
-          dolorem doloremque temporibus, quod numquam error alias eius neque
-          inventore officia! Lorem, ipsum dolor sit amet consectetur adipisicing
-          elit. Quod dolore in dignissimos tempora nulla. Debitis, minima
-          soluta, incidunt dicta dolorem doloremque temporibus, quod numquam
-          error alias eius neque inventore officia! Lorem, ipsum dolor sit amet
-          consectetur adipisicing elit. Quod dolore in dignissimos tempora
-          nulla. Debitis, minima soluta, incidunt dicta dolorem doloremque
-          temporibus, quod numquam error alias eius neque inventore officia!
-        </Text>
       </Layout>
     </Chakra>
   );
@@ -104,22 +91,6 @@ export async function getServerSideProps(ctx: NextPageContext) {
         };
       }
     }
-    // const call = await axios.get("https://api.spotify.com/v1/me/playlists", {
-    //   method: "GET",
-    //   headers: {
-    //     Authorization: "Bearer " + session.accessToken,
-    //   },
-    // });
-    // if (call.status === 401) {
-    // ctx.res.statusCode = 302;
-    // ctx.res.setHeader("Location", `${hostname}/auth/signin`);
-    // ctx.res.end();
-    // } else {
-    //   const data = call.data;
-    // if (data) {
-    //   content = data;
-    // }
-    // }
   } else {
     ctx.res.statusCode = 302;
     ctx.res.setHeader("Location", `${hostname}/auth/signin`);
