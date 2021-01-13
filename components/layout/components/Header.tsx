@@ -53,6 +53,7 @@ const Header: React.FC<HeaderProps> = () => {
         backgroundColor={bg}
         transition="background-color 0.2s"
         boxShadow={`0 1px 2px 0 ${sw}`}
+        zIndex={10}
       >
         <Container maxW="1328px">
           <noscript>

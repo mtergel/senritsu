@@ -6,6 +6,7 @@ import RecForm from "../../components/generate/RecForm";
 import Layout from "../../components/layout/Layout";
 import { Chakra } from "../../components/wrapper/Chakra";
 import Track from "../../components/track/Track";
+import TrackList from "../../components/track/TrackList";
 
 const Generate = ({ session, content, cookies }) => {
   const [submit, setSubmit] = useState(false);
@@ -22,9 +23,8 @@ const Generate = ({ session, content, cookies }) => {
     <Chakra cookies={cookies}>
       <Layout>
         <Box>
-          <Track />
-          {/* {tracks ? (
-            tracks.map((i) => <div key={i.id}>{i.name}</div>)
+          {tracks ? (
+            <TrackList trackList={tracks} />
           ) : (
             <>
               <div>
@@ -37,7 +37,7 @@ const Generate = ({ session, content, cookies }) => {
                 setTracks={handleSetTracks}
               />
             </>
-          )} */}
+          )}
         </Box>
       </Layout>
     </Chakra>

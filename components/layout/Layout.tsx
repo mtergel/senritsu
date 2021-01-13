@@ -42,6 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           style={{
             height: "100%",
             width: "100%",
+            zIndex: 11,
           }}
         >
           <Header />
