@@ -1,6 +1,5 @@
 import { NextPageContext } from "next";
 import { getSession } from "next-auth/client";
-import Nav from "../components/nav";
 import axios from "axios";
 import Article from "../components/article/Article";
 import ArticleTitle from "../components/article/ArticleTitle";
@@ -21,7 +20,7 @@ const NextAuth = ({ content, session, cookies, error }) => {
   if (!session) {
     return (
       <Chakra cookies={cookies}>
-        <Nav />
+        <div>Access denied</div>
       </Chakra>
     );
   }

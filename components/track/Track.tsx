@@ -3,10 +3,14 @@ import {
   Box,
   Flex,
   Heading,
+  HStack,
+  Icon,
+  IconButton,
   Slider,
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
+  Spacer,
   Text,
 } from "@chakra-ui/react";
 import { msConvertor } from "../../lib/helper/msConvertor";
@@ -14,6 +18,13 @@ import ReactPlayer from "react-player/lazy";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./Track.module.css";
+import SoundIcon from "./SoundIcon";
+import {
+  IoHeartOutline,
+  IoVolumeMediumOutline,
+  IoAddCircleOutline,
+} from "react-icons/io5";
+import { ImSpotify } from "react-icons/im";
 interface TrackProps {
   index?: string | number;
   track: any;
@@ -58,7 +69,9 @@ const Track: React.FC<TrackProps> = ({ index, track }) => {
             aria-colindex={1}
             tabIndex={-1}
           >
-            <Heading size="sm">{`${index}.`}</Heading>
+            <Heading size="sm">
+              {playing && track.preview_url ? <SoundIcon /> : `${index}.`}
+            </Heading>
           </Box>
           <Box
             role="gridcell"
@@ -107,22 +120,38 @@ const Track: React.FC<TrackProps> = ({ index, track }) => {
                 },
               }}
             >
-              <Text mr={4}>Preview:</Text>
               {track.preview_url ? (
-                <Flex width="100%">
-                  <Slider
-                    aria-label="slider-ex-1"
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    value={volume}
-                    onChange={handleSetVolume}
-                  >
-                    <SliderTrack>
-                      <SliderFilledTrack />
-                    </SliderTrack>
-                    <SliderThumb />
-                  </Slider>
+                <Flex width="100%" py={2} px={"16px"}>
+                  <HStack>
+                    <IconButton aria-label="Like">
+                      <Icon as={IoHeartOutline} />
+                    </IconButton>
+                    <IconButton aria-label="Add">
+                      <Icon as={IoAddCircleOutline} />
+                    </IconButton>
+                    <IconButton aria-label="Spotify">
+                      <Icon as={ImSpotify} color="purple.400" />
+                    </IconButton>
+                  </HStack>
+                  <Spacer />
+                  <Flex alignItems="center" minWidth="200px">
+                    <Icon as={IoVolumeMediumOutline} mr={2} />
+                    <Slider
+                      aria-label="slider-ex-1"
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      value={volume}
+                      onChange={handleSetVolume}
+                      colorScheme="purple"
+                    >
+                      <SliderTrack>
+                        <SliderFilledTrack />
+                      </SliderTrack>
+                      <SliderThumb />
+                    </Slider>
+                  </Flex>
+
                   <ReactPlayer
                     url={track.preview_url}
                     playing={playing}
@@ -137,7 +166,9 @@ const Track: React.FC<TrackProps> = ({ index, track }) => {
                   />
                 </Flex>
               ) : (
-                <Text>Unavailable</Text>
+                <Text width="100%" py={2} px={"16px"}>
+                  Preview unavailable
+                </Text>
               )}
             </motion.div>
           )}

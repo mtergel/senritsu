@@ -74,7 +74,6 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
             Authorization: "Bearer " + session.accessToken,
           },
           params: {
-            limit: 30,
             seed_tracks: topTracks.data.items.map((item) => item.id).join(","),
             seed_artists: topArtists.data.items
               .map((item) => item.id)
@@ -108,12 +107,6 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
               </Center>
             )}
           </ModalBody>
-          {/* <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button variant="ghost">Secondary Action</Button>
-          </ModalFooter> */}
         </ModalContent>
       </Modal>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -162,7 +155,7 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
           </FormErrorMessage>
         </FormControl>
         <FormControl isInvalid={errors.name}>
-          <FormLabel htmlFor="instrumentalness">Apathetic - Curious</FormLabel>
+          <FormLabel htmlFor="instrumentalness">Curious - Apathetic</FormLabel>
           <Slider
             aria-label="slider-ex-2"
             colorScheme="pink"
