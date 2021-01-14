@@ -5,7 +5,6 @@ import { useState } from "react";
 import RecForm from "../../components/generate/RecForm";
 import Layout from "../../components/layout/Layout";
 import { Chakra } from "../../components/wrapper/Chakra";
-import Track from "../../components/track/Track";
 import TrackList from "../../components/track/TrackList";
 
 const Generate = ({ session, content, cookies }) => {

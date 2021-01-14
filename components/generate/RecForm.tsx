@@ -102,7 +102,7 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
           <ModalBody>
             {submit && (
               <Center>
-                <Text>Generating based on your preferences</Text>
+                <Text mr={4}>Generating based on your preferences</Text>
                 <CircularProgress isIndeterminate color="green.500" />
               </Center>
             )}
@@ -114,7 +114,7 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
           <FormLabel htmlFor="energy">Relaxed - Energetic</FormLabel>
           <Slider
             aria-label="slider-ex-2"
-            colorScheme="pink"
+            colorScheme="purple"
             defaultValue={0.5}
             name="energy"
             aria-labelledby="energy"
@@ -136,7 +136,7 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
           <FormLabel htmlFor="danceability">Shy - Friendly</FormLabel>
           <Slider
             aria-label="slider-ex-2"
-            colorScheme="pink"
+            colorScheme="purple"
             defaultValue={0.5}
             name="danceability"
             aria-labelledby="danceability"
@@ -158,7 +158,7 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
           <FormLabel htmlFor="instrumentalness">Curious - Apathetic</FormLabel>
           <Slider
             aria-label="slider-ex-2"
-            colorScheme="pink"
+            colorScheme="purple"
             defaultValue={0.5}
             name="instrumentalness"
             aria-labelledby="instrumentalness"

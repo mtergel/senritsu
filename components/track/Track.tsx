@@ -25,6 +25,7 @@ import {
   IoAddCircleOutline,
 } from "react-icons/io5";
 import { ImSpotify } from "react-icons/im";
+import Link from "next/link";
 interface TrackProps {
   index?: string | number;
   track: any;
@@ -51,6 +52,7 @@ const Track: React.FC<TrackProps> = ({ index, track }) => {
   };
 
   if (track) {
+    console.log(track);
     const trackLen = msConvertor(track.duration_ms);
     return (
       <motion.div
@@ -129,9 +131,13 @@ const Track: React.FC<TrackProps> = ({ index, track }) => {
                     <IconButton aria-label="Add">
                       <Icon as={IoAddCircleOutline} />
                     </IconButton>
-                    <IconButton aria-label="Spotify">
-                      <Icon as={ImSpotify} color="purple.400" />
-                    </IconButton>
+                    <Link href={track.external_urls.spotify} passHref>
+                      <a target="_blank" rel="noopener noreferrer">
+                        <IconButton aria-label="Spotify">
+                          <Icon as={ImSpotify} color="purple.400" />
+                        </IconButton>
+                      </a>
+                    </Link>
                   </HStack>
                   <Spacer />
                   <Flex alignItems="center" minWidth="200px">
