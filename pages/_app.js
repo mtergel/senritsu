@@ -1,3 +1,4 @@
+import { ChakraProvider } from "@chakra-ui/react";
 import { Provider } from "next-auth/client";
 
 function MyApp({ Component, pageProps }) {
@@ -15,7 +16,9 @@ function MyApp({ Component, pageProps }) {
         }
       `}</style>
       <Provider session={session}>
-        <Component {...pageProps} />
+        <ChakraProvider resetCSS>
+          <Component {...pageProps} />
+        </ChakraProvider>
       </Provider>
     </>
   );

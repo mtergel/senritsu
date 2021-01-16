@@ -103,7 +103,7 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
             {submit && (
               <Center>
                 <Text mr={4}>Generating based on your preferences</Text>
-                <CircularProgress isIndeterminate color="green.500" />
+                <CircularProgress isIndeterminate color="purple.400" />
               </Center>
             )}
           </ModalBody>

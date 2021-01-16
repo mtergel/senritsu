@@ -10,7 +10,7 @@ const options = {
       clientId: process.env.SPOTIFY_CLIENT_ID,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
       scope:
-        "user-read-private user-read-email user-top-read playlist-read-private",
+        "user-read-private user-read-email user-top-read playlist-read-private playlist-modify-private playlist-modify-public",
     }),
   ],
 
@@ -76,6 +76,7 @@ const options = {
       if (profile) {
         token.followers = profile.followers;
         token.external_urls = profile.external_urls;
+        token.id = profile.id;
       }
       return Promise.resolve(token);
     },
@@ -92,6 +93,7 @@ const options = {
       session.accessToken = user.accessToken;
       session.followers = user.followers;
       session.external_urls = user.external_urls;
+      session.id = user.id;
       return Promise.resolve(session);
     },
   },
