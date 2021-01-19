@@ -93,7 +93,7 @@ const Header: React.FC<HeaderProps> = () => {
                 <Flex>
                   <HStack
                     spacing={["12px", "24px"]}
-                    marginRight={["12px", "48px"]}
+                    marginRight={["12px", "12px", "48px"]}
                   >
                     <Link href="https://github.com/mtergel/senritsu" passHref>
                       <a target="_blank" rel="noopener noreferrer">

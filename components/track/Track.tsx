@@ -19,19 +19,16 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./Track.module.css";
 import SoundIcon from "./SoundIcon";
-import {
-  IoHeartOutline,
-  IoVolumeMediumOutline,
-  IoAddCircleOutline,
-} from "react-icons/io5";
+import { IoVolumeMediumOutline, IoAddCircleOutline } from "react-icons/io5";
 import { ImSpotify } from "react-icons/im";
 import Link from "next/link";
 interface TrackProps {
   index?: string | number;
   track: any;
+  onClickAdd: (trackURI: string) => void;
 }
 
-const Track: React.FC<TrackProps> = ({ index, track }) => {
+const Track: React.FC<TrackProps> = ({ index, track, onClickAdd }) => {
   const [playing, setPlaying] = useState(false);
   const [delayHandler, setDelayHandler] = useState<NodeJS.Timeout | null>(null);
 
@@ -52,7 +49,6 @@ const Track: React.FC<TrackProps> = ({ index, track }) => {
   };
 
   if (track) {
-    console.log(track);
     const trackLen = msConvertor(track.duration_ms);
     return (
       <motion.div
@@ -125,10 +121,10 @@ const Track: React.FC<TrackProps> = ({ index, track }) => {
               {track.preview_url ? (
                 <Flex width="100%" py={2} px={"16px"}>
                   <HStack>
-                    <IconButton aria-label="Like">
-                      <Icon as={IoHeartOutline} />
-                    </IconButton>
-                    <IconButton aria-label="Add">
+                    <IconButton
+                      aria-label="Add"
+                      onClick={() => onClickAdd(track.uri)}
+                    >
                       <Icon as={IoAddCircleOutline} />
                     </IconButton>
                     <Link href={track.external_urls.spotify} passHref>
