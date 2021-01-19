@@ -3,6 +3,7 @@ import { getSession } from "next-auth/client";
 import { Heading } from "@chakra-ui/react";
 import { Chakra } from "../components/wrapper/Chakra";
 import Layout from "../components/layout/Layout";
+import styles from "../styles/HomePage.module.css";
 
 const NextAuth = ({ content, session, cookies, error }) => {
   if (error) {
@@ -21,11 +22,35 @@ const NextAuth = ({ content, session, cookies, error }) => {
     );
   }
   console.log("content in client: ", content);
+
   // If session exists, display content
+
   return (
     <Chakra cookies={cookies}>
       <Layout>
-        <Heading>Home page</Heading>
+        <Heading>Animate me</Heading>
+        <div className={styles.container}>
+          <img
+            className={styles.card1}
+            src="/static/home/main.svg"
+            alt="sakura tree mountain sun"
+          />
+          <img
+            className={styles.card2}
+            src="/static/home/torii.svg"
+            alt="torii shrine gate"
+          />
+          <img
+            className={styles.card3}
+            src="/static/home/pedalGroup1.svg"
+            alt="sakura pedals"
+          />
+          <img
+            className={styles.card4}
+            src="/static/home/pedalGroup2.svg"
+            alt="sakura pedals"
+          />
+        </div>
       </Layout>
     </Chakra>
   );
