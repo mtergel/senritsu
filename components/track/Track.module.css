@@ -2,6 +2,7 @@
   border: 1px solid transparent;
   border-radius: 4px;
   transition: background-color ease 0.15s;
+  cursor: pointer;
 }
 .track:hover {
   background-color: hsla(0, 0%, 100%, 0.1);

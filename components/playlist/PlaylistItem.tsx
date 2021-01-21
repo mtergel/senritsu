@@ -26,6 +26,7 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
       transition="background-color .3s ease"
       id={id}
       as="a"
+      cursor="pointer"
       onClick={onClick}
     >
       <Box flexGrow={1}>

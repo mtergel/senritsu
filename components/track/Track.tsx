@@ -12,72 +12,54 @@ import {
   SliderTrack,
   Spacer,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { msConvertor } from "../../lib/helper/msConvertor";
 import ReactPlayer from "react-player/lazy";
-import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./Track.module.css";
 import SoundIcon from "./SoundIcon";
 import { IoVolumeMediumOutline, IoAddCircleOutline } from "react-icons/io5";
 import { ImSpotify } from "react-icons/im";
 import Link from "next/link";
+import useVisible from "./useVisible";
+import clsx from "clsx";
+
 interface TrackProps {
   index?: string | number;
   track: any;
   onClickAdd: (trackURI: string) => void;
+  volume: number;
+  handleSetVolume: (value: number) => void;
 }
 
-const Track: React.FC<TrackProps> = ({ index, track, onClickAdd }) => {
-  const [playing, setPlaying] = useState(false);
-  const [delayHandler, setDelayHandler] = useState<NodeJS.Timeout | null>(null);
-
-  const setPlayingTrue = () => {
-    setDelayHandler(
-      setTimeout(() => {
-        setPlaying(true);
-      }, 800)
-    );
-  };
-  const setPlayingFalse = () => {
-    setPlaying(false);
-    clearTimeout(delayHandler);
-  };
-  const [volume, setVolume] = useState(0.2);
-  const handleSetVolume = (value: number) => {
-    setVolume(value);
-  };
+const Track: React.FC<TrackProps> = ({
+  index,
+  track,
+  onClickAdd,
+  volume,
+  handleSetVolume,
+}) => {
+  const { ref, isVisible, setIsVisible } = useVisible(false);
+  const bgActive = useColorModeValue("#E9D8FD", "hsla(0, 0%, 100%, 0.1)");
 
   if (track) {
     const trackLen = msConvertor(track.duration_ms);
     return (
       <motion.div
         layout
-        onMouseEnter={() => setPlayingTrue()}
-        onMouseLeave={() => setPlayingFalse()}
+        onClick={() => setIsVisible((prevState) => !prevState)}
         className={styles.track}
+        style={isVisible ? { backgroundColor: bgActive } : {}}
         transition={{ duration: 0.4 }}
       >
         <motion.div layout className={styles.trackGrid}>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            role="gridcell"
-            aria-colindex={1}
-            tabIndex={-1}
-          >
+          <Box display="flex" justifyContent="center" alignItems="center">
             <Heading size="sm">
-              {playing && track.preview_url ? <SoundIcon /> : `${index}.`}
+              {isVisible && track.preview_url ? <SoundIcon /> : `${index}.`}
             </Heading>
           </Box>
-          <Box
-            role="gridcell"
-            aria-colindex={2}
-            tabIndex={-1}
-            display="flex"
-            alignItems="center"
-          >
+          <Box display="flex" alignItems="center">
             <Flex pr={"8px"} justifyContent="flex-start" flexDir="column">
               <Heading size="sm" isTruncated justifySelf="start" mb={1.8}>
                 {track.name}
@@ -94,23 +76,19 @@ const Track: React.FC<TrackProps> = ({ index, track, onClickAdd }) => {
               </Flex>
             </Flex>
           </Box>
-          <Box
-            role="gridcell"
-            aria-colindex={3}
-            tabIndex={-1}
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-end"
-          >
+          <Box display="flex" alignItems="center" justifyContent="flex-end">
             <div>{trackLen}</div>
           </Box>
         </motion.div>
         <AnimatePresence>
-          {playing && (
+          {isVisible && (
             <motion.div
               layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{
+                opacity: 0,
+                y: -25,
+              }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{
                 opacity: 0,
                 transition: {
@@ -119,7 +97,7 @@ const Track: React.FC<TrackProps> = ({ index, track, onClickAdd }) => {
               }}
             >
               {track.preview_url ? (
-                <Flex width="100%" py={2} px={"16px"}>
+                <Flex width="100%" py={2} px={"16px"} ref={ref}>
                   <HStack>
                     <IconButton
                       aria-label="Add"
@@ -156,7 +134,7 @@ const Track: React.FC<TrackProps> = ({ index, track, onClickAdd }) => {
 
                   <ReactPlayer
                     url={track.preview_url}
-                    playing={playing}
+                    playing={isVisible}
                     style={{ display: "none" }}
                     volume={volume}
                     loop

@@ -1,6 +1,6 @@
 import { Box, Heading } from "@chakra-ui/react";
 import { AnimateSharedLayout } from "framer-motion";
-import React from "react";
+import React, { useState } from "react";
 import Track from "./Track";
 
 interface TrackListProps {
@@ -9,6 +9,11 @@ interface TrackListProps {
 }
 
 const TrackList: React.FC<TrackListProps> = ({ trackList, onClickAdd }) => {
+  const [volume, setVolume] = useState(0.2);
+  const handleSetVolume = (value: number) => {
+    setVolume(value);
+  };
+
   return (
     <>
       <Box
@@ -18,11 +23,18 @@ const TrackList: React.FC<TrackListProps> = ({ trackList, onClickAdd }) => {
         borderRadius={4}
       >
         <Heading size="md" mb={4}>
-          Hover over the tracks for preview.
+          Click on the tracks for preview.
         </Heading>
         <AnimateSharedLayout>
           {trackList.map((i, index) => (
-            <Track track={i} index={index} key={i.id} onClickAdd={onClickAdd} />
+            <Track
+              track={i}
+              index={index}
+              key={i.id}
+              onClickAdd={onClickAdd}
+              volume={volume}
+              handleSetVolume={handleSetVolume}
+            />
           ))}
         </AnimateSharedLayout>
       </Box>

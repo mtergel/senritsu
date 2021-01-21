@@ -87,7 +87,7 @@ const Generate = ({ session, content, cookies }) => {
   const [loading, setLoading] = useState(false);
 
   return (
-    <Chakra cookies={cookies}>
+    <>
       <Layout>
         <Box>
           {tracks ? (
@@ -128,6 +128,7 @@ const Generate = ({ session, content, cookies }) => {
                       id={playlist.id}
                       image={playlist.images[0].url}
                       onClick={() => onAddTrackToPlaylist(playlist.id)}
+                      key={playlist.id}
                     />
                   ))}
               </Grid>
@@ -150,7 +151,7 @@ const Generate = ({ session, content, cookies }) => {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </Chakra>
+    </>
   );
 };
 
