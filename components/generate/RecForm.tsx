@@ -16,10 +16,12 @@ import {
   CircularProgress,
   Center,
   Text,
+  Heading,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useSession } from "next-auth/client";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
 
 interface RecFormProps {
   submit: boolean;
@@ -31,6 +33,8 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
   const [session, loading] = useSession();
   const { register, handleSubmit, errors, formState } = useForm();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const router = useRouter();
 
   const onSubmit = async (formData) => {
     // alert(JSON.stringify(formData));
@@ -74,6 +78,7 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
             Authorization: "Bearer " + session.accessToken,
           },
           params: {
+            limit: 50,
             seed_tracks: topTracks.data.items.map((item) => item.id).join(","),
             seed_artists: topArtists.data.items
               .map((item) => item.id)
@@ -89,7 +94,7 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
       setSubmit(false);
       onClose();
     } catch (error) {
-      console.log(error);
+      router.push("/auth/signin");
     }
   };
 
@@ -102,19 +107,20 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
           <ModalBody>
             {submit && (
               <Center>
-                <Text>Generating based on your preferences</Text>
-                <CircularProgress isIndeterminate color="green.500" />
+                <Text mr={4}>Generating based on your preferences</Text>
+                <CircularProgress isIndeterminate color="purple.400" />
               </Center>
             )}
           </ModalBody>
         </ModalContent>
       </Modal>
       <form onSubmit={handleSubmit(onSubmit)}>
+        <Heading mb={12}>Discover New Music</Heading>
         <FormControl isInvalid={errors.name}>
           <FormLabel htmlFor="energy">Relaxed - Energetic</FormLabel>
           <Slider
             aria-label="slider-ex-2"
-            colorScheme="pink"
+            colorScheme="purple"
             defaultValue={0.5}
             name="energy"
             aria-labelledby="energy"
@@ -136,7 +142,7 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
           <FormLabel htmlFor="danceability">Shy - Friendly</FormLabel>
           <Slider
             aria-label="slider-ex-2"
-            colorScheme="pink"
+            colorScheme="purple"
             defaultValue={0.5}
             name="danceability"
             aria-labelledby="danceability"
@@ -158,7 +164,7 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
           <FormLabel htmlFor="instrumentalness">Curious - Apathetic</FormLabel>
           <Slider
             aria-label="slider-ex-2"
-            colorScheme="pink"
+            colorScheme="purple"
             defaultValue={0.5}
             name="instrumentalness"
             aria-labelledby="instrumentalness"
@@ -178,11 +184,11 @@ const RecForm: React.FC<RecFormProps> = ({ submit, setSubmit, setTracks }) => {
         </FormControl>
         <Button
           mt={4}
-          colorScheme="teal"
+          colorScheme="purple"
           isLoading={formState.isSubmitting}
           type="submit"
         >
-          Submit
+          Generate
         </Button>
       </form>
     </>

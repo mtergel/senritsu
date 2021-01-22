@@ -12,76 +12,63 @@ import {
   SliderTrack,
   Spacer,
   Text,
+  Tooltip,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { msConvertor } from "../../lib/helper/msConvertor";
 import ReactPlayer from "react-player/lazy";
-import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./Track.module.css";
 import SoundIcon from "./SoundIcon";
-import {
-  IoHeartOutline,
-  IoVolumeMediumOutline,
-  IoAddCircleOutline,
-} from "react-icons/io5";
+import { IoVolumeMediumOutline, IoAddCircleOutline } from "react-icons/io5";
 import { ImSpotify } from "react-icons/im";
+import Link from "next/link";
+import usePlaying from "./usePlaying";
+
 interface TrackProps {
   index?: string | number;
   track: any;
+  onClickAdd: (trackURI: string) => void;
+  volume: number;
+  handleSetVolume: (value: number) => void;
 }
 
-const Track: React.FC<TrackProps> = ({ index, track }) => {
-  const [playing, setPlaying] = useState(false);
-  const [delayHandler, setDelayHandler] = useState<NodeJS.Timeout | null>(null);
-
-  const setPlayingTrue = () => {
-    setDelayHandler(
-      setTimeout(() => {
-        setPlaying(true);
-      }, 800)
-    );
-  };
-  const setPlayingFalse = () => {
-    setPlaying(false);
-    clearTimeout(delayHandler);
-  };
-  const [volume, setVolume] = useState(0.2);
-  const handleSetVolume = (value: number) => {
-    setVolume(value);
-  };
+const Track: React.FC<TrackProps> = ({
+  index,
+  track,
+  onClickAdd,
+  volume,
+  handleSetVolume,
+}) => {
+  const { ref, isPlaying, setIsPlaying } = usePlaying(false);
+  const bgActive = useColorModeValue("#E9D8FD", "hsla(0, 0%, 100%, 0.1)");
 
   if (track) {
     const trackLen = msConvertor(track.duration_ms);
     return (
       <motion.div
         layout
-        onMouseEnter={() => setPlayingTrue()}
-        onMouseLeave={() => setPlayingFalse()}
+        onClick={() => setIsPlaying(true)}
         className={styles.track}
-        transition={{ duration: 0.4 }}
+        ref={ref}
+        style={isPlaying ? { backgroundColor: bgActive } : {}}
+        transition={{ duration: 0.2 }}
       >
         <motion.div layout className={styles.trackGrid}>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            role="gridcell"
-            aria-colindex={1}
-            tabIndex={-1}
-          >
+          <Box display="flex" justifyContent="center" alignItems="center">
             <Heading size="sm">
-              {playing && track.preview_url ? <SoundIcon /> : `${index}.`}
+              {isPlaying && track.preview_url ? <SoundIcon /> : `${index}.`}
             </Heading>
           </Box>
-          <Box
-            role="gridcell"
-            aria-colindex={2}
-            tabIndex={-1}
-            display="flex"
-            alignItems="center"
-          >
+          <Box display="flex" alignItems="center">
             <Flex pr={"8px"} justifyContent="flex-start" flexDir="column">
-              <Heading size="sm" isTruncated justifySelf="start" mb={1.8}>
+              <Heading
+                size="sm"
+                isTruncated
+                noOfLines={1}
+                justifySelf="start"
+                mb={1.8}
+              >
                 {track.name}
               </Heading>
               <Flex>
@@ -90,51 +77,62 @@ const Track: React.FC<TrackProps> = ({ index, track }) => {
                     Explicit
                   </Badge>
                 )}
-                <Flex fontSize="sm" isTruncated>
-                  {track.artists.map((a) => a.name).join(", ")}
+                <Flex fontSize="sm">
+                  <Text isTruncated>
+                    {track.artists.map((a) => a.name).join(", ")}
+                  </Text>
                 </Flex>
               </Flex>
             </Flex>
           </Box>
-          <Box
-            role="gridcell"
-            aria-colindex={3}
-            tabIndex={-1}
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-end"
-          >
+          <Box display="flex" alignItems="center" justifyContent="flex-end">
             <div>{trackLen}</div>
           </Box>
         </motion.div>
         <AnimatePresence>
-          {playing && (
+          {isPlaying && (
             <motion.div
               layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{
+                opacity: 0,
+                y: -15,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: {
+                  delay: 0.3,
+                },
+              }}
               exit={{
                 opacity: 0,
-                transition: {
-                  delay: 0.2,
-                },
               }}
             >
               {track.preview_url ? (
                 <Flex width="100%" py={2} px={"16px"}>
                   <HStack>
-                    <IconButton aria-label="Like">
-                      <Icon as={IoHeartOutline} />
-                    </IconButton>
-                    <IconButton aria-label="Add">
-                      <Icon as={IoAddCircleOutline} />
-                    </IconButton>
-                    <IconButton aria-label="Spotify">
-                      <Icon as={ImSpotify} color="purple.400" />
-                    </IconButton>
+                    <Tooltip label="Add to playlist">
+                      <IconButton
+                        aria-label="Add"
+                        onClick={() => onClickAdd(track.uri)}
+                      >
+                        <Icon as={IoAddCircleOutline} />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Link href={track.external_urls.spotify} passHref>
+                      <a target="_blank" rel="noopener noreferrer">
+                        <IconButton aria-label="Spotify">
+                          <Icon as={ImSpotify} color="purple.400" />
+                        </IconButton>
+                      </a>
+                    </Link>
                   </HStack>
                   <Spacer />
-                  <Flex alignItems="center" minWidth="200px">
+                  <Flex
+                    alignItems="center"
+                    minWidth={["120px", "120px", "200px"]}
+                  >
                     <Icon as={IoVolumeMediumOutline} mr={2} />
                     <Slider
                       aria-label="slider-ex-1"
@@ -154,7 +152,7 @@ const Track: React.FC<TrackProps> = ({ index, track }) => {
 
                   <ReactPlayer
                     url={track.preview_url}
-                    playing={playing}
+                    playing={isPlaying}
                     style={{ display: "none" }}
                     volume={volume}
                     loop
@@ -166,9 +164,31 @@ const Track: React.FC<TrackProps> = ({ index, track }) => {
                   />
                 </Flex>
               ) : (
-                <Text width="100%" py={2} px={"16px"}>
-                  Preview unavailable
-                </Text>
+                <>
+                  <Text width="100%" py={2} px={"16px"}>
+                    Preview unavailable
+                  </Text>
+                  <Box width="100%" py={2} px={"16px"}>
+                    <HStack>
+                      <Tooltip label="Add to playlist">
+                        <IconButton
+                          aria-label="Add"
+                          onClick={() => onClickAdd(track.uri)}
+                        >
+                          <Icon as={IoAddCircleOutline} />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Link href={track.external_urls.spotify} passHref>
+                        <a target="_blank" rel="noopener noreferrer">
+                          <IconButton aria-label="Spotify">
+                            <Icon as={ImSpotify} color="purple.400" />
+                          </IconButton>
+                        </a>
+                      </Link>
+                    </HStack>
+                  </Box>
+                </>
               )}
             </motion.div>
           )}

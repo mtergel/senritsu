@@ -2,7 +2,6 @@ import { Box, Container } from "@chakra-ui/react";
 import Header from "./components/Header";
 import Scrollbar from "react-scrollbars-custom";
 import Head from "next/head";
-import Sidebar from "./components/Sidebar";
 
 interface LayoutProps {}
 
@@ -45,8 +44,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           }}
         >
           <Header />
-          <Container maxWidth="85rem" display="flex">
-            <Sidebar />
+          <Container
+            maxWidth="100%"
+            paddingLeft={["1rem", "1rem", "5rem"]}
+            paddingRight={["1rem", "1rem", "5rem"]}
+            display="flex"
+          >
             <Box as="main" marginTop="8.5rem" flex="1 1 0%">
               {children}
             </Box>
