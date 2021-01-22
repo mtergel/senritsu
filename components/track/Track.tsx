@@ -23,7 +23,7 @@ import SoundIcon from "./SoundIcon";
 import { IoVolumeMediumOutline, IoAddCircleOutline } from "react-icons/io5";
 import { ImSpotify } from "react-icons/im";
 import Link from "next/link";
-import useVisible from "./useVisible";
+import usePlaying from "./usePlaying";
 
 interface TrackProps {
   index?: string | number;
@@ -40,7 +40,7 @@ const Track: React.FC<TrackProps> = ({
   volume,
   handleSetVolume,
 }) => {
-  const { ref, isVisible, setIsVisible } = useVisible(false);
+  const { ref, isPlaying, setIsPlaying } = usePlaying(false);
   const bgActive = useColorModeValue("#E9D8FD", "hsla(0, 0%, 100%, 0.1)");
 
   if (track) {
@@ -48,16 +48,16 @@ const Track: React.FC<TrackProps> = ({
     return (
       <motion.div
         layout
-        onClick={() => setIsVisible((prevState) => !prevState)}
+        onClick={() => setIsPlaying(true)}
         className={styles.track}
-        style={isVisible ? { backgroundColor: bgActive } : {}}
-        transition={{ duration: 0.4 }}
         ref={ref}
+        style={isPlaying ? { backgroundColor: bgActive } : {}}
+        transition={{ duration: 0.2 }}
       >
         <motion.div layout className={styles.trackGrid}>
           <Box display="flex" justifyContent="center" alignItems="center">
             <Heading size="sm">
-              {isVisible && track.preview_url ? <SoundIcon /> : `${index}.`}
+              {isPlaying && track.preview_url ? <SoundIcon /> : `${index}.`}
             </Heading>
           </Box>
           <Box display="flex" alignItems="center">
@@ -77,8 +77,10 @@ const Track: React.FC<TrackProps> = ({
                     Explicit
                   </Badge>
                 )}
-                <Flex fontSize="sm" isTruncated>
-                  {track.artists.map((a) => a.name).join(", ")}
+                <Flex fontSize="sm">
+                  <Text isTruncated>
+                    {track.artists.map((a) => a.name).join(", ")}
+                  </Text>
                 </Flex>
               </Flex>
             </Flex>
@@ -88,19 +90,22 @@ const Track: React.FC<TrackProps> = ({
           </Box>
         </motion.div>
         <AnimatePresence>
-          {isVisible && (
+          {isPlaying && (
             <motion.div
               layout
               initial={{
                 opacity: 0,
-                y: -25,
+                y: -15,
               }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: {
+                  delay: 0.3,
+                },
+              }}
               exit={{
                 opacity: 0,
-                transition: {
-                  delay: 0.2,
-                },
               }}
             >
               {track.preview_url ? (
@@ -147,7 +152,7 @@ const Track: React.FC<TrackProps> = ({
 
                   <ReactPlayer
                     url={track.preview_url}
-                    playing={isVisible}
+                    playing={isPlaying}
                     style={{ display: "none" }}
                     volume={volume}
                     loop

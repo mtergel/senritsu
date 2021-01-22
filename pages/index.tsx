@@ -15,6 +15,8 @@ import {
   Heading,
   Center,
   Flex,
+  Button,
+  Link,
 } from "@chakra-ui/react";
 import { NextPageContext } from "next";
 import { getSession } from "next-auth/client";
@@ -25,6 +27,7 @@ import TrackList from "../components/track/TrackList";
 import axios from "axios";
 import Article from "../components/article/Article";
 import PlaylistItem from "../components/playlist/PlaylistItem";
+import { motion } from "framer-motion";
 
 const Generate = ({ session, content }) => {
   const [submit, setSubmit] = useState(false);
@@ -89,18 +92,30 @@ const Generate = ({ session, content }) => {
   );
   const [loading, setLoading] = useState(false);
 
+  const handleReset = () => {
+    setTracks(null);
+  };
+
   return (
     <>
       <Layout>
         <Box
           display="flex"
-          flexDirection={["column", "column", "column", "row"]}
+          flexDirection={["column", "column", "column", "column", "row"]}
           justifyContent="space-around"
           alignItems="stretch"
           boxSizing="border-box"
         >
           {tracks ? (
-            <TrackList trackList={tracks} onClickAdd={handleOpen} />
+            <>
+              <Flex flexDirection="column" pb={8}>
+                <TrackList
+                  trackList={tracks}
+                  onClickAdd={handleOpen}
+                  handleReset={handleReset}
+                />
+              </Flex>
+            </>
           ) : (
             <Box flexGrow={1} width="100%" px={6} maxW={"600px"}>
               <RecForm
@@ -110,14 +125,8 @@ const Generate = ({ session, content }) => {
               />
             </Box>
           )}
-          <Box
-            position="relative"
-            width="400px"
-            ml={[8, 8, 16]}
-            mt={"40px"}
-            border="1px solid"
-          >
-            <Box position="fixed" width="400px" px={2} zIndex={"-1"}>
+          <Box position="relative" width="400px" ml={[8, 8, 16]} mt={"40px"}>
+            <Box position="fixed" width="400px" px={2} zIndex={-1}>
               <Box mb={8} display="flex" justifyContent="center">
                 <img src="/static/layout/svg.svg" width="280px" height="auto" />
               </Box>
@@ -128,8 +137,11 @@ const Generate = ({ session, content }) => {
               </Center>
               <Center>
                 <Text align="center">
-                  This app uses Spotify's APIs to quickly discover new music
-                  based on your preferences.
+                  This app uses{" "}
+                  <Link color="#1DB954" href="https://developer.spotify.com/">
+                    Spotify's APIs{" "}
+                  </Link>
+                  to discover new music based on your preferences.
                 </Text>
               </Center>
             </Box>

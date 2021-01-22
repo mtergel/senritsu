@@ -1,14 +1,19 @@
-import { Box, Heading } from "@chakra-ui/react";
-import { AnimateSharedLayout } from "framer-motion";
+import { Box, Button, Center, Heading } from "@chakra-ui/react";
+import { AnimateSharedLayout, motion } from "framer-motion";
 import React, { useState } from "react";
 import Track from "./Track";
 
 interface TrackListProps {
   trackList: any[];
   onClickAdd: (trackURI: string) => void;
+  handleReset: () => void;
 }
 
-const TrackList: React.FC<TrackListProps> = ({ trackList, onClickAdd }) => {
+const TrackList: React.FC<TrackListProps> = ({
+  trackList,
+  onClickAdd,
+  handleReset,
+}) => {
   const [volume, setVolume] = useState(0.2);
   const handleSetVolume = (value: number) => {
     setVolume(value);
@@ -35,6 +40,18 @@ const TrackList: React.FC<TrackListProps> = ({ trackList, onClickAdd }) => {
             handleSetVolume={handleSetVolume}
           />
         ))}
+        <motion.div layout>
+          <Center mt={4}>
+            <Heading size="md" textAlign="center" mb={2}>
+              Done listenting?
+            </Heading>
+          </Center>
+          <Center>
+            <Button variant="ghost" color="purple" onClick={handleReset}>
+              Click here to generate new playlist
+            </Button>
+          </Center>
+        </motion.div>
       </AnimateSharedLayout>
     </Box>
   );

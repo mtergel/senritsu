@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 
-function useVisible(initialIsVisible) {
-  const [isVisible, setIsVisible] = useState(initialIsVisible);
+function usePlaying(initPlaying) {
+  const [isPlaying, setIsPlaying] = useState(initPlaying);
   const ref = useRef(null);
 
   const handleClickOutside = (event) => {
     if (ref.current && !ref.current.contains(event.target)) {
-      console.log("firing");
-      setIsVisible(false);
+      setIsPlaying(false);
     }
   };
 
@@ -18,7 +17,7 @@ function useVisible(initialIsVisible) {
     };
   }, []);
 
-  return { ref, isVisible, setIsVisible };
+  return { ref, isPlaying, setIsPlaying };
 }
 
-export default useVisible;
+export default usePlaying;

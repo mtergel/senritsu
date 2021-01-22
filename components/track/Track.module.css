@@ -14,7 +14,7 @@
 .trackGrid {
   display: grid;
   grid-gap: 16px;
-  grid-template-columns: [index] 16px [first] 4fr [last] minmax(0px, 1fr);
+  grid-template-columns: 16px 4fr minmax(0, 1fr);
   height: 56px;
   width: 100%;
   padding: 8px 16px;
