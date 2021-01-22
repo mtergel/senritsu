@@ -12,6 +12,7 @@ import {
   SliderTrack,
   Spacer,
   Text,
+  Tooltip,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { msConvertor } from "../../lib/helper/msConvertor";
@@ -23,7 +24,6 @@ import { IoVolumeMediumOutline, IoAddCircleOutline } from "react-icons/io5";
 import { ImSpotify } from "react-icons/im";
 import Link from "next/link";
 import useVisible from "./useVisible";
-import clsx from "clsx";
 
 interface TrackProps {
   index?: string | number;
@@ -52,6 +52,7 @@ const Track: React.FC<TrackProps> = ({
         className={styles.track}
         style={isVisible ? { backgroundColor: bgActive } : {}}
         transition={{ duration: 0.4 }}
+        ref={ref}
       >
         <motion.div layout className={styles.trackGrid}>
           <Box display="flex" justifyContent="center" alignItems="center">
@@ -61,7 +62,13 @@ const Track: React.FC<TrackProps> = ({
           </Box>
           <Box display="flex" alignItems="center">
             <Flex pr={"8px"} justifyContent="flex-start" flexDir="column">
-              <Heading size="sm" isTruncated justifySelf="start" mb={1.8}>
+              <Heading
+                size="sm"
+                isTruncated
+                noOfLines={1}
+                justifySelf="start"
+                mb={1.8}
+              >
                 {track.name}
               </Heading>
               <Flex>
@@ -97,14 +104,17 @@ const Track: React.FC<TrackProps> = ({
               }}
             >
               {track.preview_url ? (
-                <Flex width="100%" py={2} px={"16px"} ref={ref}>
+                <Flex width="100%" py={2} px={"16px"}>
                   <HStack>
-                    <IconButton
-                      aria-label="Add"
-                      onClick={() => onClickAdd(track.uri)}
-                    >
-                      <Icon as={IoAddCircleOutline} />
-                    </IconButton>
+                    <Tooltip label="Add to playlist">
+                      <IconButton
+                        aria-label="Add"
+                        onClick={() => onClickAdd(track.uri)}
+                      >
+                        <Icon as={IoAddCircleOutline} />
+                      </IconButton>
+                    </Tooltip>
+
                     <Link href={track.external_urls.spotify} passHref>
                       <a target="_blank" rel="noopener noreferrer">
                         <IconButton aria-label="Spotify">
@@ -114,7 +124,10 @@ const Track: React.FC<TrackProps> = ({
                     </Link>
                   </HStack>
                   <Spacer />
-                  <Flex alignItems="center" minWidth="200px">
+                  <Flex
+                    alignItems="center"
+                    minWidth={["120px", "120px", "200px"]}
+                  >
                     <Icon as={IoVolumeMediumOutline} mr={2} />
                     <Slider
                       aria-label="slider-ex-1"
@@ -146,9 +159,31 @@ const Track: React.FC<TrackProps> = ({
                   />
                 </Flex>
               ) : (
-                <Text width="100%" py={2} px={"16px"}>
-                  Preview unavailable
-                </Text>
+                <>
+                  <Text width="100%" py={2} px={"16px"}>
+                    Preview unavailable
+                  </Text>
+                  <Box width="100%" py={2} px={"16px"}>
+                    <HStack>
+                      <Tooltip label="Add to playlist">
+                        <IconButton
+                          aria-label="Add"
+                          onClick={() => onClickAdd(track.uri)}
+                        >
+                          <Icon as={IoAddCircleOutline} />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Link href={track.external_urls.spotify} passHref>
+                        <a target="_blank" rel="noopener noreferrer">
+                          <IconButton aria-label="Spotify">
+                            <Icon as={ImSpotify} color="purple.400" />
+                          </IconButton>
+                        </a>
+                      </Link>
+                    </HStack>
+                  </Box>
+                </>
               )}
             </motion.div>
           )}

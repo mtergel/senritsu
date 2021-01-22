@@ -15,30 +15,28 @@ const TrackList: React.FC<TrackListProps> = ({ trackList, onClickAdd }) => {
   };
 
   return (
-    <>
-      <Box
-        role="grid"
-        border="1px solid transparent"
-        outline={0}
-        borderRadius={4}
-      >
-        <Heading size="md" mb={4}>
-          Click on the tracks for preview.
-        </Heading>
-        <AnimateSharedLayout>
-          {trackList.map((i, index) => (
-            <Track
-              track={i}
-              index={index}
-              key={i.id}
-              onClickAdd={onClickAdd}
-              volume={volume}
-              handleSetVolume={handleSetVolume}
-            />
-          ))}
-        </AnimateSharedLayout>
-      </Box>
-    </>
+    <Box
+      border="1px solid transparent"
+      outline={0}
+      borderRadius={4}
+      flexGrow={1}
+    >
+      <Heading size="md" mb={4}>
+        Click on the tracks for preview.
+      </Heading>
+      <AnimateSharedLayout>
+        {trackList.map((i, index) => (
+          <Track
+            track={i}
+            index={index + 1}
+            key={i.id}
+            onClickAdd={onClickAdd}
+            volume={volume}
+            handleSetVolume={handleSetVolume}
+          />
+        ))}
+      </AnimateSharedLayout>
+    </Box>
   );
 };
 export default TrackList;
