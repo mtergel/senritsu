@@ -201,7 +201,6 @@ const Generate = ({ session, content }) => {
 export async function getServerSideProps(ctx: NextPageContext) {
   const session = await getSession(ctx);
   let content = null;
-  const hostname = process.env.NEXTAUTH_URL || "http://localhost:3001";
   if (session && session.accessToken) {
     try {
       const call = await axios.get(
@@ -220,7 +219,7 @@ export async function getServerSideProps(ctx: NextPageContext) {
     } catch (error) {
       if (error.response && error.response.status === 401) {
         ctx.res.statusCode = 302;
-        ctx.res.setHeader("Location", `${hostname}/auth/signin`);
+        ctx.res.setHeader("Location", `/auth/signin`);
         ctx.res.end();
         return {
           props: {},
@@ -238,7 +237,7 @@ export async function getServerSideProps(ctx: NextPageContext) {
     }
   } else {
     ctx.res.statusCode = 302;
-    ctx.res.setHeader("Location", `${hostname}/auth/signin`);
+    ctx.res.setHeader("Location", `/auth/signin`);
     ctx.res.end();
     return {
       props: {},
