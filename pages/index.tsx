@@ -169,7 +169,11 @@ const Generate = ({ session, content }) => {
                       description={playlist.description}
                       owner_name={playlist.owner.display_name}
                       id={playlist.id}
-                      image={playlist.images[0].url}
+                      image={
+                        playlist.images &&
+                        playlist.images.length > 0 &&
+                        playlist.images[0].url
+                      }
                       onClick={() => onAddTrackToPlaylist(playlist.id)}
                       key={playlist.id}
                     />
