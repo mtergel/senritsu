@@ -124,9 +124,20 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
           _focus={{
             boxShadow: "0 0 0 2px rgba(255, 255, 255, 0.6)",
           }}
+          mr={3}
         >
           {`Photo by: ${user.name}`}
           <Icon mx="2px" as={BiLinkExternal} />
+        </Link>
+        <Link
+          href={"https://unsplash.com"}
+          isExternal
+          color="white"
+          _focus={{
+            boxShadow: "0 0 0 2px rgba(255, 255, 255, 0.6)",
+          }}
+        >
+          {`on Unplash`}
         </Link>
       </motion.div>
     </Box>

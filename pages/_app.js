@@ -73,6 +73,10 @@ function MyApp({ Component, pageProps }) {
           property="twitter:image"
           content="https://senritsu.vercel.app/static/meta.png"
         ></meta>
+        <meta
+          name="google-site-verification"
+          content="jx7bcOn0ar5_rHDdj6HX5H7VBYucbKaIoLc99nmXFA0"
+        />
       </Head>
 
       <style global jsx>{`
