@@ -114,11 +114,8 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
 
   const bgPaper = useColorModeValue("whiteAlpha.800", "blackAlpha.700");
 
-  const [submit, setSubmit] = useState(false);
   const [tracks, setTracks] = useState<null | any[]>(null);
-  const handleSubmit = useCallback((value: boolean) => {
-    setSubmit(value);
-  }, []);
+
   const handleSetTracks = useCallback((values: any[]) => {
     setTracks(values);
   }, []);
@@ -246,11 +243,7 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
                       refresh={handleRefresh}
                     />
                   ) : (
-                    <RecForm
-                      submit={submit}
-                      setSubmit={handleSubmit}
-                      setTracks={handleSetTracks}
-                    />
+                    <RecForm setTracks={handleSetTracks} />
                   )}
                 </Box>
                 <Player

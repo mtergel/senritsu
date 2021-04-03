@@ -30,8 +30,8 @@ import {
 import { useState } from "react";
 import axios from "axios";
 import { MdRefresh } from "react-icons/md";
-import PlaylistItem from "../playlist/PlayListItem";
 import SoundIcon from "../soundBar/SoundIcon";
+import PlaylistItem from "../playlist/PlayListItem";
 
 interface PlayerProps {
   volume: number;
@@ -74,6 +74,7 @@ const Player: React.FC<PlayerProps> = ({
       setFetching(true);
       console.log("sending request");
       const call = await axios.get(
+        // @ts-ignore
         `https://api.spotify.com/v1/users/${session.id}/playlists`,
         {
           method: "GET",
@@ -132,7 +133,8 @@ const Player: React.FC<PlayerProps> = ({
   };
 
   const filteredPlaylist = playlists
-    ? playlists.items.filter((i) => i.owner.id === session.id)
+    ? // @ts-ignore
+      playlists.items.filter((i) => i.owner.id === session.id)
     : null;
 
   return (
