@@ -64,7 +64,7 @@ const Home = (props: HomeProps) => {
           width={["0%", "0%", "0%", "100%"]}
           display={["none", "none", "none", "block"]}
           transition="all 0.3s ease"
-          backgroundColor={image.color}
+          backgroundColor={image ? image.color : "transparent"}
         >
           {props.res.response && (
             <ImageGallery
@@ -88,11 +88,17 @@ export async function getStaticProps() {
     accessKey: process.env.UNSPLASH_ACCESS_KEY,
   });
 
-  const res = await api.photos.getRandom({
-    count: 20,
-    featured: true,
-    orientation: "portrait",
-  });
+  let res = {
+    response: [],
+  };
+  try {
+    // @ts-ignore
+    res = await api.photos.getRandom({
+      count: 20,
+      featured: true,
+      orientation: "portrait",
+    });
+  } catch (error) {}
 
   return { props: { res }, revalidate: 1800 };
 }
@@ -100,14 +106,16 @@ export async function getStaticProps() {
 export default Home;
 
 interface MainComponentProps {
-  image: Random;
+  image?: Random;
 }
 const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
   const [session, loading] = useSession();
-  const { data, loading: colorLoading, error } = usePalette(image.urls.small);
+  const { data, loading: colorLoading, error } = usePalette(
+    image ? image.urls.small : ""
+  );
 
   const bgColor = colorLoading
-    ? image.color
+    ? image && image.color
     : useColorModeValue(data.lightMuted, data.darkMuted);
 
   const textColor = useColorModeValue("#181a18", "white");

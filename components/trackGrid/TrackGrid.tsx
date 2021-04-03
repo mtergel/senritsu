@@ -130,6 +130,9 @@ const TrackGrid: React.FC<TrackGridProps> = memo(
                               rel="noopener noreferrer"
                               textAlign="center"
                               fontSize="xs"
+                              wordBreak="break-word"
+                              display="inline-block"
+                              paddingInlineStart={0}
                               _notFirst={{
                                 _before: {
                                   content: '", "',
