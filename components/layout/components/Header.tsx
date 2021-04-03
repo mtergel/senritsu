@@ -28,7 +28,7 @@ const Header: React.FC<HeaderProps> = () => {
         <Box className={"nojs-show"}>
           <Flex width="100%" alignItems="center" height="100px">
             <Link href="/" passHref>
-              <Box as="a">
+              <Box as="a" aria-label="Home">
                 <Box
                   as="svg"
                   height="2rem"
@@ -54,6 +54,7 @@ const Header: React.FC<HeaderProps> = () => {
                       _hover={{
                         opacity: 1,
                       }}
+                      aria-label="Github"
                     />
                   </a>
                 </Link>

@@ -215,7 +215,7 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
                   <Heading mr={4} size="md">
                     Login with
                   </Heading>
-                  <Image src={"/Spotify-Logo.png"} width="48px" />
+                  <Image src={"/Spotify-Logo.png"} width="48px" alt="spotify" />
                 </Button>
               </Center>
             )}

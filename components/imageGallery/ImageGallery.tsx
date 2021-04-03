@@ -57,6 +57,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
           initial="enter"
           animate="center"
           exit="exit"
+          loading="lazy"
           transition={{
             x: { type: "spring", stiffness: 250, damping: 25 },
             opacity: { duration: 0.4 },
