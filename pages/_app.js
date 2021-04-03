@@ -77,6 +77,7 @@ function MyApp({ Component, pageProps }) {
           name="google-site-verification"
           content="jx7bcOn0ar5_rHDdj6HX5H7VBYucbKaIoLc99nmXFA0"
         />
+        <link rel="preload" as="image" href="/Spotify-Logo.png"></link>
       </Head>
 
       <style global jsx>{`
