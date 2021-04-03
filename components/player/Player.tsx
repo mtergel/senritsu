@@ -31,7 +31,7 @@ import { useState } from "react";
 import axios from "axios";
 import { MdRefresh } from "react-icons/md";
 import SoundIcon from "../soundBar/SoundIcon";
-import PlaylistItem from "../playlist/PlayListItem";
+import PlaylistItem from "../playlist/PlaylistItem";
 
 interface PlayerProps {
   volume: number;
