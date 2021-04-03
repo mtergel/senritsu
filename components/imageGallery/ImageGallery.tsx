@@ -122,7 +122,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
             opacity: 0,
           }}
         >
-          <Box>
+          <Box color="white">
             Photo by{" "}
             <Link
               isExternal
