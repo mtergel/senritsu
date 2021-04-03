@@ -1,260 +1,275 @@
+import { signIn, useSession } from "next-auth/client";
+import Layout from "../components/layout/Layout";
+import { createApi } from "unsplash-js";
+import { ApiResponse } from "unsplash-js/dist/helpers/response";
+import ImageGallery from "../components/imageGallery/ImageGallery";
+import { Random } from "unsplash-js/dist/methods/photos/types";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { wrap } from "popmotion";
 import {
   Box,
-  CircularProgress,
-  Grid,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  useColorModeValue,
-  useDisclosure,
-  useToast,
-  Text,
-  Heading,
   Center,
-  Flex,
-  Button,
+  Container,
+  Grid,
+  GridItem,
+  Heading,
   Link,
-} from "@chakra-ui/react";
-import { NextPageContext } from "next";
-import { getSession } from "next-auth/client";
-import { useState } from "react";
+  Text,
+} from "@chakra-ui/layout";
+import { usePalette } from "react-palette";
+import { useColorModeValue } from "@chakra-ui/color-mode";
+import Header from "../components/layout/components/Header";
+import { Button } from "@chakra-ui/button";
+import { Image } from "@chakra-ui/image";
 import RecForm from "../components/generate/RecForm";
-import Layout from "../components/layout/Layout";
-import TrackList from "../components/track/TrackList";
-import axios from "axios";
-import Article from "../components/article/Article";
-import PlaylistItem from "../components/playlist/PlaylistItem";
-import { motion } from "framer-motion";
+import { CircularProgress } from "@chakra-ui/progress";
+import TrackGrid from "../components/trackGrid/TrackGrid";
+import Player from "../components/player/Player";
 
-const Generate = ({ session, content }) => {
-  const [submit, setSubmit] = useState(false);
-  const [tracks, setTracks] = useState<null | any[]>(null);
-  const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const bg = useColorModeValue("#ffffff", "rgb(26,26,26)");
-  const toast = useToast();
+const hostname =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : process.env.NEXTAUTH_URL;
 
-  const handleOpen = (trackURI: string) => {
-    setSelectedTrack(trackURI);
-    onOpen();
-  };
+interface HomeProps {
+  res: ApiResponse<Random>;
+}
 
-  const handleSubmit = (value: boolean) => {
-    setSubmit(value);
-  };
-  const handleSetTracks = (values: any[]) => {
-    setTracks(values);
-  };
+const Home = (props: HomeProps) => {
+  const images = (props.res.response as unknown) as Random[];
 
-  const onAddTrackToPlaylist = async (pid: string) => {
-    try {
-      setLoading(true);
-      await axios.post(
-        `https://api.spotify.com/v1/playlists/${pid}/tracks`,
-        null,
-        {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer " + session.accessToken,
-          },
-          params: {
-            uris: selectedTrack,
-          },
-        }
-      );
-      setLoading(false);
-      onClose();
-      toast({
-        title: "Track added.",
-        description: "We've added that track to your playlist.",
-        status: "success",
-        duration: 4500,
-        isClosable: true,
-      });
-    } catch (error) {
-      setLoading(false);
-      onClose();
-      toast({
-        title: "An error occurred.",
-        description: "Unable to add track to playlist.",
-        status: "error",
-        duration: 4500,
-        isClosable: true,
-      });
+  const [session] = useSession();
+  useEffect(() => {
+    // @ts-ignore
+    if (session?.error === "RefreshAccessTokenError") {
+      signIn("spotify", { callbackUrl: hostname }); // Force sign in to hopefully resolve error
     }
+  }, [session]);
+
+  // Image gallery states
+  const [[page, direction], setPage] = useState([0, 0]);
+  const imageIndex = wrap(0, images.length, page);
+
+  const paginate = (newDirection: number) => {
+    setPage([page + newDirection, newDirection]);
   };
 
-  const filterdPlaylist = content.items.filter(
-    (i) => i.owner.id === session.id
-  );
-  const [loading, setLoading] = useState(false);
-
-  const handleReset = () => {
-    setTracks(null);
-  };
+  const image = images[imageIndex];
 
   return (
-    <>
-      <Layout>
-        <Box
-          display="flex"
-          flexDirection={["column", "column", "column", "column", "row"]}
-          justifyContent="space-around"
-          alignItems="stretch"
-          boxSizing="border-box"
+    <Layout>
+      <Grid templateColumns="repeat(12, 1fr)" height="100%">
+        <GridItem
+          colSpan={[0, 0, 0, 4]}
+          width={["0%", "0%", "0%", "100%"]}
+          display={["none", "none", "none", "block"]}
+          transition="all 0.3s ease"
+          backgroundColor={image.color}
         >
-          {tracks ? (
-            <>
-              <Flex flexDirection="column" pb={8}>
-                <TrackList
-                  trackList={tracks}
-                  onClickAdd={handleOpen}
-                  handleReset={handleReset}
-                />
-              </Flex>
-            </>
-          ) : (
-            <Box flexGrow={1} width="100%" px={6} maxW={"600px"}>
-              <RecForm
-                submit={submit}
-                setSubmit={handleSubmit}
-                setTracks={handleSetTracks}
-              />
-            </Box>
+          {props.res.response && (
+            <ImageGallery
+              image={image}
+              direction={direction}
+              page={page}
+              paginate={paginate}
+            />
           )}
-          <Box position="relative" width="400px" ml={[8, 8, 16]} mt={"40px"}>
-            <Box position="fixed" width="400px" px={2} zIndex={-1}>
-              <Box mb={8} display="flex" justifyContent="center">
-                <img src="/static/layout/svg.svg" width="280px" height="auto" />
-              </Box>
-              <Center mb={4}>
-                <Heading size="lg" textAlign="center">
-                  Welcome to Senritsu
-                </Heading>
-              </Center>
-              <Center>
-                <Text align="center">
-                  This app uses{" "}
-                  <Link color="#1DB954" href="https://developer.spotify.com/">
-                    Spotify's APIs{" "}
-                  </Link>
-                  to discover new music based on your preferences.
-                </Text>
-              </Center>
-            </Box>
-          </Box>
-        </Box>
-      </Layout>
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
-        <ModalOverlay />
-        <ModalContent backgroundColor={bg}>
-          <ModalHeader>Add track to</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody position="relative">
-            <Article>
-              <Grid
-                as="section"
-                templateColumns="repeat(auto-fill,minmax(180px,1fr))"
-                width="100%"
-                gridColumnGap={"24px"}
-                gridRowGap={"12px"}
-              >
-                {filterdPlaylist &&
-                  filterdPlaylist.map((playlist) => (
-                    <PlaylistItem
-                      name={playlist.name}
-                      description={playlist.description}
-                      owner_name={playlist.owner.display_name}
-                      id={playlist.id}
-                      image={
-                        playlist.images &&
-                        playlist.images.length > 0 &&
-                        playlist.images[0].url
-                      }
-                      onClick={() => onAddTrackToPlaylist(playlist.id)}
-                      key={playlist.id}
-                    />
-                  ))}
-              </Grid>
-            </Article>
-            {loading && (
-              <Box
-                position="absolute"
-                top={0}
-                bottom={0}
-                left={0}
-                right={0}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                backgroundColor="rgba(26,26,26, 0.5)"
-              >
-                <CircularProgress isIndeterminate color="purple.400" />
-              </Box>
-            )}
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    </>
+        </GridItem>
+        <GridItem colSpan={[12, 12, 12, 8]} zIndex={2} height="100%">
+          <MainComponent image={image} />
+        </GridItem>
+      </Grid>
+    </Layout>
   );
 };
 
-export async function getServerSideProps(ctx: NextPageContext) {
-  const session = await getSession(ctx);
-  let content = null;
-  if (session && session.accessToken) {
-    try {
-      const call = await axios.get(
-        `https://api.spotify.com/v1/users/${session.id}/playlists`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + session.accessToken,
-          },
-        }
-      );
-      const data = call.data;
-      if (data) {
-        content = data;
-      }
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        ctx.res.statusCode = 302;
-        ctx.res.setHeader("Location", `/auth/signin`);
-        ctx.res.end();
-        return {
-          props: {},
-        };
-      } else {
-        return {
-          props: {
-            session,
-            content,
-            cookies: ctx.req.headers.cookie ?? "",
-            error: "Something happend",
-          },
-        };
-      }
-    }
-  } else {
-    ctx.res.statusCode = 302;
-    ctx.res.setHeader("Location", `/auth/signin`);
-    ctx.res.end();
-    return {
-      props: {},
-    };
-  }
+export async function getStaticProps() {
+  const api = createApi({
+    accessKey: process.env.UNSPLASH_ACCESS_KEY,
+  });
 
-  return {
-    props: {
-      session,
-      content,
-      cookies: ctx.req.headers.cookie ?? "",
-    },
-  };
+  const res = await api.photos.getRandom({
+    count: 20,
+    featured: true,
+    orientation: "portrait",
+  });
+
+  return { props: { res }, revalidate: 1800 };
 }
 
-export default Generate;
+export default Home;
+
+interface MainComponentProps {
+  image: Random;
+}
+const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
+  const [session, loading] = useSession();
+  const { data, loading: colorLoading, error } = usePalette(image.urls.small);
+
+  const bgColor = colorLoading
+    ? image.color
+    : useColorModeValue(data.lightMuted, data.darkMuted);
+
+  const textColor = useColorModeValue("#181a18", "white");
+
+  const bgPaper = useColorModeValue("whiteAlpha.800", "blackAlpha.700");
+
+  const [submit, setSubmit] = useState(false);
+  const [tracks, setTracks] = useState<null | any[]>(null);
+  const handleSubmit = useCallback((value: boolean) => {
+    setSubmit(value);
+  }, []);
+  const handleSetTracks = useCallback((values: any[]) => {
+    setTracks(values);
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    setIsPlaying(false);
+    setTracks(null);
+    setPlayingTrackIndex(null);
+  }, []);
+
+  const [playingTrackIndex, setPlayingTrackIndex] = useState<number | null>(
+    null
+  );
+
+  const handleTrackIndex = useCallback((index: number | null) => {
+    if (index === null) {
+      setPlayingTrackIndex(null);
+      setIsPlaying(false);
+    } else {
+      setPlayingTrackIndex(index);
+      setIsPlaying(true);
+    }
+  }, []);
+
+  const [volume, setVolume] = useState(0.2);
+  const handleSetVolume = useCallback((value: number) => {
+    setVolume(value);
+  }, []);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const handleIsPlaying = useCallback((value: boolean) => {
+    setIsPlaying(value);
+  }, []);
+
+  const handlePlay = useCallback(() => {
+    if (playingTrackIndex !== null && playingTrackIndex >= 0) {
+      setIsPlaying(true);
+    } else if (tracks) {
+      setPlayingTrackIndex(0);
+      setIsPlaying(true);
+    }
+  }, [playingTrackIndex, tracks]);
+
+  const onEnded = useCallback(() => {
+    if (playingTrackIndex + 1 < tracks.length) {
+      setPlayingTrackIndex((prevState) => {
+        return prevState + 1;
+      });
+    } else {
+      setPlayingTrackIndex(null);
+      setIsPlaying(false);
+    }
+  }, [playingTrackIndex, tracks]);
+
+  const currentTrack = useMemo(() => {
+    return playingTrackIndex !== null && playingTrackIndex >= 0
+      ? tracks[playingTrackIndex]
+      : null;
+  }, [playingTrackIndex, tracks]);
+
+  return (
+    <Box
+      w="100%"
+      h="100%"
+      transition="all .6s ease"
+      backgroundColor={bgColor}
+      color={textColor}
+      display="flex"
+      flexDirection="column"
+    >
+      <Header />
+      {loading ? (
+        <Center py={6}>
+          <CircularProgress isIndeterminate />
+        </Center>
+      ) : (
+        <Box display="flex" flexDirection="column" flexGrow={1} py={[1, 1, 6]}>
+          <Container
+            maxWidth="100%"
+            paddingLeft={["1rem", "1rem", "4rem"]}
+            paddingRight={["1rem", "1rem", "4rem"]}
+            flexGrow={1}
+          >
+            {!session && (
+              <Center>
+                <Button
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  boxShadow="lg"
+                  px={8}
+                  py={2}
+                  cursor="pointer"
+                  backgroundColor={bgPaper}
+                  height="auto"
+                  onClick={() => signIn("spotify", { callbackUrl: hostname })}
+                >
+                  <Heading mr={4} size="md">
+                    Login with
+                  </Heading>
+                  <Image src={"/Spotify-Logo.png"} width="48px" />
+                </Button>
+              </Center>
+            )}
+            {session && (
+              <Box height="100%" display="flex" flexDir="column">
+                {!tracks && (
+                  <Box>
+                    <Heading mb={2}>Discover New Music</Heading>
+                    <Text>
+                      This app uses{" "}
+                      <Link as={"b"} href="https://developer.spotify.com/">
+                        Spotify's API{" "}
+                      </Link>
+                      to discover new music based on your preferences.
+                    </Text>
+                  </Box>
+                )}
+
+                <Box flexGrow={1} my={8}>
+                  {tracks ? (
+                    <TrackGrid
+                      tracks={tracks}
+                      playingIndex={playingTrackIndex}
+                      onClick={handleTrackIndex}
+                      refresh={handleRefresh}
+                    />
+                  ) : (
+                    <RecForm
+                      submit={submit}
+                      setSubmit={handleSubmit}
+                      setTracks={handleSetTracks}
+                    />
+                  )}
+                </Box>
+                <Player
+                  bgPaper={bgPaper}
+                  disabled={!Boolean(tracks)}
+                  handleIsPlaying={handleIsPlaying}
+                  handlePlay={handlePlay}
+                  handleSetVolume={handleSetVolume}
+                  isPlaying={isPlaying}
+                  onEnded={onEnded}
+                  playingTrackIndex={playingTrackIndex}
+                  track={currentTrack}
+                  volume={volume}
+                />
+              </Box>
+            )}
+          </Container>
+        </Box>
+      )}
+    </Box>
+  );
+};

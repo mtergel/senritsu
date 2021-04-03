@@ -1,10 +1,5 @@
 import { extendTheme } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools";
-const config = {
-  useSystemColorMode: false,
-  initialColorMode: "light",
-};
-
 const theme = extendTheme({
   fonts: {
     body: "'Raleway', sans-serif",
@@ -18,6 +13,9 @@ const theme = extendTheme({
       },
     }),
   },
-  config,
+  config: {
+    useSystemColorMode: true,
+    initialColorMode: "light",
+  },
 });
 export default theme;

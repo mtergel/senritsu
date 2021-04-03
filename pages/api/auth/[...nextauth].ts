@@ -1,6 +1,51 @@
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 
+/**
+ * Takes a token, and returns a new token with updated
+ * `accessToken` and `accessTokenExpires`. If an error occurs,
+ * returns the old token and an error property
+ */
+async function refreshAccessToken(token) {
+  try {
+    const url =
+      "https://accounts.spotify.com/api/token?" +
+      new URLSearchParams({
+        client_id: process.env.SPOTIFY_CLIENT_ID,
+        client_secret: process.env.SPOTIFY_CLIENT_SECRET,
+        grant_type: "refresh_token",
+        refresh_token: token.refreshToken,
+      });
+
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    const refreshedTokens = await response.json();
+
+    if (!response.ok) {
+      throw refreshedTokens;
+    }
+
+    return {
+      ...token,
+      accessToken: refreshedTokens.access_token,
+      accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
+      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      ...token,
+      error: "RefreshAccessTokenError",
+    };
+  }
+}
+
 const options = {
   // @link https://next-auth.js.org/configuration/providers
   providers: [
@@ -70,15 +115,32 @@ const options = {
       //const isSignIn = (user) ? true : false
       // Add auth_time to token on signin in
       //if (isSignIn) { token.auth_time = Math.floor(Date.now() / 1000) }
-      if (account) {
-        token.accessToken = account.accessToken;
+      // Initial sign in
+      if (account && user) {
+        // token.accessToken = account.accessToken;
+        return {
+          accessToken: account.accessToken,
+          accessTokenExpires: Date.now() + account.expires_in * 1000,
+          refreshToken: account.refresh_token,
+          user,
+          id: profile.id,
+        };
       }
-      if (profile) {
-        token.followers = profile.followers;
-        token.external_urls = profile.external_urls;
-        token.id = profile.id;
+
+      // Return previous token if the access token has not expired yet
+      if (Date.now() < token.accessTokenExpires) {
+        return token;
       }
-      return Promise.resolve(token);
+
+      // Access token has expired, try to update it
+      return refreshAccessToken(token);
+
+      // if (profile) {
+      //   token.followers = profile.followers;
+      //   token.external_urls = profile.external_urls;
+      //   token.id = profile.id;
+      // }
+      // return Promise.resolve(token);
     },
 
     /**
@@ -88,13 +150,21 @@ const options = {
      *                               JSON Web Token (if not using database sessions)
      * @return {object}              Session that will be returned to the client
      */
-    session: async (session, user) => {
-      //session.customSessionProperty = 'bar'
-      session.accessToken = user.accessToken;
-      session.followers = user.followers;
-      session.external_urls = user.external_urls;
-      session.id = user.id;
-      return Promise.resolve(session);
+    session: async (session, token) => {
+      // //session.customSessionProperty = 'bar'
+      // session.accessToken = user.accessToken;
+      // session.followers = user.followers;
+      // session.external_urls = user.external_urls;
+      // session.id = user.id;
+      // return Promise.resolve(session);
+      if (token) {
+        session.user = token.user;
+        session.accessToken = token.accessToken;
+        session.error = token.error;
+        session.id = token.id;
+      }
+
+      return session;
     },
   },
 

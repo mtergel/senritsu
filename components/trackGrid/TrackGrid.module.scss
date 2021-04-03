@@ -1,0 +1,11 @@
+.imageContainer {
+  &:hover .imageHover {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.imageHover {
+  opacity: 0;
+  visibility: hidden;
+}

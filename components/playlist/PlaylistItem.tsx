@@ -30,7 +30,13 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
       onClick={onClick}
     >
       <Box flexGrow={1}>
-        <Image src={image} mb={4} />
+        <Image
+          src={image}
+          mb={4}
+          width="180px"
+          objectFit="cover"
+          height="180px"
+        />
       </Box>
       <Heading fontSize="lg" isTruncated mb={2}>
         {name}
