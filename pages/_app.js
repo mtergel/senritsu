@@ -45,7 +45,10 @@ function MyApp({ Component, pageProps }) {
           content={"Senritsu - Make your perfect playlist"}
           key="ogtitle"
         />
-        <meta property="og:image" content="static/meta.png" />
+        <meta
+          property="og:image"
+          content="https://senritsu.vercel.app/static/meta.png"
+        />
         <meta
           property="og:description"
           content={
@@ -66,7 +69,10 @@ function MyApp({ Component, pageProps }) {
           property="twitter:description"
           content="Get music recommendations based on your listening history and add them to your playlist"
         ></meta>
-        <meta property="twitter:image" content="static/meta.png"></meta>
+        <meta
+          property="twitter:image"
+          content="https://senritsu.vercel.app/static/meta.png"
+        ></meta>
       </Head>
 
       <style global jsx>{`
