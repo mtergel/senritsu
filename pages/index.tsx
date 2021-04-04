@@ -25,6 +25,8 @@ import RecForm from "../components/generate/RecForm";
 import { CircularProgress } from "@chakra-ui/progress";
 import TrackGrid from "../components/trackGrid/TrackGrid";
 import Player from "../components/player/Player";
+import GeneratePlaylist from "../components/generate/GeneratePlaylist";
+import { useDisclosure } from "@chakra-ui/hooks";
 
 const hostname =
   process.env.NODE_ENV === "development"
@@ -183,6 +185,8 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
       : null;
   }, [playingTrackIndex, tracks]);
 
+  const { isOpen, onClose, onOpen } = useDisclosure();
+
   return (
     <Box
       w="100%"
@@ -199,7 +203,7 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
           <CircularProgress isIndeterminate />
         </Center>
       ) : (
-        <Box display="flex" flexDirection="column" flexGrow={1} py={[1, 1, 6]}>
+        <Box display="flex" flexDirection="column" flexGrow={1} pb={[1, 1, 6]}>
           <Container
             maxWidth="100%"
             paddingLeft={["1rem", "1rem", "4rem"]}
@@ -223,7 +227,12 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
                   <Heading mr={4} size="md">
                     Login with
                   </Heading>
-                  <Image src={"/Spotify-Logo.png"} width="48px" alt="spotify" />
+                  <Image
+                    src={"/Spotify-Logo.png"}
+                    width="48px"
+                    height="48px"
+                    alt="spotify"
+                  />
                 </Button>
               </Center>
             )}
@@ -242,14 +251,44 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
                   </Box>
                 )}
 
-                <Box flexGrow={1} my={8}>
+                <Box flexGrow={1}>
                   {tracks ? (
-                    <TrackGrid
-                      tracks={tracks}
-                      playingIndex={playingTrackIndex}
-                      onClick={handleTrackIndex}
-                      refresh={handleRefresh}
-                    />
+                    <Box height="100%" display="flex" flexDirection="column">
+                      <Box>
+                        <Heading size="md" mb={2}>
+                          Here are your tracks.
+                        </Heading>
+                        <Text>
+                          You can listen through the previews and add them to
+                          your playlists.
+                        </Text>
+                        <Text display="flex" alignItems="center">
+                          Or click here to
+                          <Button
+                            variant="ghost"
+                            mx={4}
+                            size="sm"
+                            onClick={onOpen}
+                          >
+                            Generate
+                          </Button>{" "}
+                          a new playlist.
+                        </Text>
+                      </Box>
+                      <Box flexGrow={1} my={4}>
+                        <TrackGrid
+                          tracks={tracks}
+                          playingIndex={playingTrackIndex}
+                          onClick={handleTrackIndex}
+                          refresh={handleRefresh}
+                        />
+                      </Box>
+                      <GeneratePlaylist
+                        open={isOpen}
+                        onClose={onClose}
+                        tracks={tracks}
+                      />
+                    </Box>
                   ) : (
                     <RecForm setTracks={handleSetTracks} />
                   )}

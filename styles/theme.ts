@@ -15,7 +15,7 @@ const theme = extendTheme({
   },
   config: {
     useSystemColorMode: true,
-    initialColorMode: "light",
+    initialColorMode: "dark",
   },
 });
 export default theme;
