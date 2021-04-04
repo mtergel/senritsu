@@ -55,6 +55,7 @@ const TrackGrid: React.FC<TrackGridProps> = memo(
                   boxShadow: "0 0 0 3px rgba(255, 255, 255, 1)",
                 }}
                 onClick={() => onClick(index)}
+                key={i.id}
               >
                 <Image
                   src={i.album.images[1].url}
@@ -138,6 +139,7 @@ const TrackGrid: React.FC<TrackGridProps> = memo(
                                   content: '", "',
                                 },
                               }}
+                              key={a.id}
                             >
                               {a.name}
                             </Text>
