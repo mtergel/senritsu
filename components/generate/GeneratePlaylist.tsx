@@ -51,6 +51,7 @@ const GeneratePlaylist: React.FC<GeneratePlaylistProps> = ({
       setGpl(true);
 
       const data = await axios.post(
+        // @ts-expect-error
         `https://api.spotify.com/v1/users/${session.id}/playlists`,
         {
           name: inputValue === "" || !inputValue ? "Senritsu" : inputValue,
