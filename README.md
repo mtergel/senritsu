@@ -1,7 +1,26 @@
-## Senritsu
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
-See the [demo](https://senritsu.vercel.app/)
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+  <a href="https://github.com/mtergel/senritsu">
+    <img src="https://raw.githubusercontent.com/mtergel/senritsu/91cebaf79bde2103dfb71fe8db977c7a7354372c/public/static/layout/logo-svg.svg" alt="Logo" width="80" height="80">
+  </a>
 
-This app uses [Spotify's API](https://developer.spotify.com/) to discover new music based on your preferences. You can quickly listen through the generated playlist and add it to your own.
+  <h3 align="center">Senritsu</h3>
 
-###
+  <p align="center">
+    Make your perfect playlist!
+    <br />
+    <a href="https://senritsu.vercel.app/">View Demo</a>
+    ·
+    <a href="https://github.com/mtergel/senritsu/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/mtergel/senritsu/issues">Request Feature</a>
+  </p>
+</p>
