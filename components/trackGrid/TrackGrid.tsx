@@ -11,7 +11,6 @@ import {
   VStack,
 } from "@chakra-ui/layout";
 import Scrollbar from "react-scrollbars-custom";
-import { MdRefresh } from "react-icons/md";
 import { FiPlay, FiPause } from "react-icons/fi";
 import { DarkMode } from "@chakra-ui/color-mode";
 import styles from "./TrackGrid.module.scss";
@@ -20,10 +19,9 @@ interface TrackGridProps {
   tracks: any[];
   onClick: (index: number | null) => void;
   playingIndex: number | null;
-  refresh: () => void;
 }
 const TrackGrid: React.FC<TrackGridProps> = memo(
-  ({ tracks, onClick, playingIndex, refresh }) => {
+  ({ tracks, onClick, playingIndex }) => {
     return (
       <Scrollbar
         style={{
@@ -152,7 +150,7 @@ const TrackGrid: React.FC<TrackGridProps> = memo(
               </GridItem>
             ))}
           </Grid>
-          <Center display="flex" alignItems="center" mt={"18px"}>
+          {/* <Center display="flex" alignItems="center" mt={"18px"}>
             <Heading size="md" textAlign="center" mr={2}>
               Done listenting?
             </Heading>
@@ -161,7 +159,7 @@ const TrackGrid: React.FC<TrackGridProps> = memo(
               aria-label="Refresh"
               icon={<MdRefresh fontSize="24px" />}
             />
-          </Center>
+          </Center> */}
         </Box>
       </Scrollbar>
     );

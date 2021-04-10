@@ -17,27 +17,47 @@ import {
   useColorModeValue,
   Box,
   ModalCloseButton,
+  ScaleFade,
+  Input,
+  VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useSession } from "next-auth/client";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/router";
-import { memo, useState } from "react";
+import { memo, useCallback, useState } from "react";
+import { Switch } from "@chakra-ui/react";
+import debounce from "lodash/debounce";
 
 interface RecFormProps {
   setTracks: (values: any[]) => void;
+  bgPaper: string;
 }
 
-const RecForm: React.FC<RecFormProps> = memo(({ setTracks }) => {
-  const [session, loading] = useSession();
-  const { register, handleSubmit, formState } = useForm();
+const RecForm: React.FC<RecFormProps> = memo(({ setTracks, bgPaper }) => {
+  const [session, _] = useSession();
+  const { register, handleSubmit, formState, watch } = useForm({
+    shouldUnregister: false,
+    defaultValues: {
+      userPref: true,
+    },
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const sliderColor = useColorModeValue("whiteAlpha", "blackAlpha");
-  const router = useRouter();
+  const sliderColor = useColorModeValue("blackAlpha", "whiteAlpha");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // SEARCH
+  const [items, setItems] = useState<any[]>([]);
+  const [searchText, setSearchText] = useState("");
+
+  const searchMore = watch("userPref");
+  const searchByTracks = watch("searchByTracks");
 
   const onSubmit = async (formData) => {
     try {
+      console.log(formData);
+
+      setLoading(true);
       const topTracks = await axios.get(
         "https://api.spotify.com/v1/me/top/tracks",
         {
@@ -86,13 +106,43 @@ const RecForm: React.FC<RecFormProps> = memo(({ setTracks }) => {
       );
 
       setTracks(recommendations.data.tracks.filter((i) => i.preview_url));
+      setLoading(false);
     } catch (error) {
       onOpen();
       console.log(error);
+      setLoading(false);
       setError(
         "Sorry, you don't have any listened tracks. Please come back after you listened to some of your favourite tracks"
       );
     }
+  };
+
+  const handleSearch = async (inputText: string) => {
+    try {
+      const searchRes = await axios.get("https://api.spotify.com/v1/search", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + session.accessToken,
+        },
+        params: {
+          q: inputText,
+          type: searchByTracks ? "track" : "artist",
+        },
+      });
+      console.log("SEARCH POG: ", inputText);
+
+      console.log("SEARCH POG: ", searchRes.data);
+    } catch (error) {}
+  };
+
+  const debouncedUpdate = useCallback(
+    debounce((inputText) => handleSearch(inputText), 1000),
+    []
+  );
+
+  const handleTextUpdate = (event) => {
+    setSearchText(event.target.value);
+    debouncedUpdate(event.target.value);
   };
 
   return (
@@ -111,8 +161,50 @@ const RecForm: React.FC<RecFormProps> = memo(({ setTracks }) => {
           </ModalBody>
         </ModalContent>
       </Modal>
-      <Box maxW="400px">
+      <Box
+        borderRadius="md"
+        p={4}
+        backgroundColor={bgPaper}
+        boxShadow="lg"
+        alignItems="center"
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
+          <FormControl display="flex" alignItems="center">
+            <FormLabel htmlFor="userPref" mb="0">
+              Use my preferences:
+            </FormLabel>
+            <Switch
+              id="userPref"
+              colorScheme={"green"}
+              name="userPref"
+              ref={register}
+            />
+          </FormControl>
+
+          {/* <ScaleFade initialScale={0.9} in={!searchMore} unmountOnExit> */}
+          <ScaleFade in={true}>
+            <Box my={4}>
+              <VStack>
+                <FormControl display="flex" alignItems="center">
+                  <FormLabel htmlFor="search-type" mb="0">
+                    Search by artists/tracks:
+                  </FormLabel>
+                  <Switch
+                    id="search-type"
+                    colorScheme={sliderColor}
+                    name="searchByTracks"
+                    ref={register}
+                  />
+                </FormControl>
+                <Input
+                  placeholder="Search artists"
+                  value={searchText}
+                  onChange={handleTextUpdate}
+                />
+              </VStack>
+            </Box>
+          </ScaleFade>
+
           <FormControl>
             <FormLabel htmlFor="energy">Relaxed - Energetic</FormLabel>
             <Slider
@@ -125,6 +217,7 @@ const RecForm: React.FC<RecFormProps> = memo(({ setTracks }) => {
               max={1}
               step={0.1}
               ref={register}
+              disabled={loading}
             >
               <SliderTrack>
                 <SliderFilledTrack />
@@ -144,6 +237,7 @@ const RecForm: React.FC<RecFormProps> = memo(({ setTracks }) => {
               max={1}
               step={0.1}
               ref={register}
+              disabled={loading}
             >
               <SliderTrack>
                 <SliderFilledTrack />
@@ -165,6 +259,7 @@ const RecForm: React.FC<RecFormProps> = memo(({ setTracks }) => {
               max={1}
               step={0.1}
               ref={register}
+              disabled={loading}
             >
               <SliderTrack>
                 <SliderFilledTrack />
@@ -172,7 +267,13 @@ const RecForm: React.FC<RecFormProps> = memo(({ setTracks }) => {
               <SliderThumb />
             </Slider>
           </FormControl>
-          <Button mt={4} isLoading={formState.isSubmitting} type="submit">
+          <Button
+            mt={4}
+            type="submit"
+            isFullWidth
+            colorScheme="green"
+            disabled={loading}
+          >
             Generate
           </Button>
         </form>

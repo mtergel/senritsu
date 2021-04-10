@@ -15,6 +15,7 @@ import {
   Heading,
   Link,
   Text,
+  VStack,
 } from "@chakra-ui/layout";
 import { usePalette } from "react-palette";
 import { useColorModeValue } from "@chakra-ui/color-mode";
@@ -62,7 +63,7 @@ const Home = (props: HomeProps) => {
     <Layout>
       <Grid templateColumns="repeat(12, 1fr)" height="100%">
         <GridItem
-          colSpan={[0, 0, 0, 4]}
+          colSpan={[0, 0, 0, 3]}
           width={["0%", "0%", "0%", "100%"]}
           display={["none", "none", "none", "block"]}
           transition="all 0.3s ease"
@@ -77,7 +78,7 @@ const Home = (props: HomeProps) => {
             />
           )}
         </GridItem>
-        <GridItem colSpan={[12, 12, 12, 8]} zIndex={2} height="100%">
+        <GridItem colSpan={[12, 12, 12, 9]} zIndex={2} height="100%">
           <MainComponent image={image} />
         </GridItem>
       </Grid>
@@ -128,12 +129,6 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
 
   const handleSetTracks = useCallback((values: any[]) => {
     setTracks(values);
-  }, []);
-
-  const handleRefresh = useCallback(() => {
-    setIsPlaying(false);
-    setTracks(null);
-    setPlayingTrackIndex(null);
   }, []);
 
   const [playingTrackIndex, setPlayingTrackIndex] = useState<number | null>(
@@ -211,7 +206,15 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
             flexGrow={1}
           >
             {!session && (
-              <Center>
+              <Center display="flex" flexDir="column" height="50%">
+                <VStack>
+                  <Heading size="lg">
+                    Your interface for music discovery, powered by Spotify.
+                  </Heading>
+
+                  <Heading size="sm">Made by Tergel Munkhdelger.</Heading>
+                </VStack>
+
                 <Button
                   display="flex"
                   justifyContent="center"
@@ -223,6 +226,7 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
                   backgroundColor={bgPaper}
                   height="auto"
                   onClick={() => signIn("spotify", { callbackUrl: hostname })}
+                  mt={6}
                 >
                   <Heading mr={4} size="md">
                     Login with
@@ -236,77 +240,47 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
                 </Button>
               </Center>
             )}
-            {session && (
-              <Box height="100%" display="flex" flexDir="column">
-                {!tracks && (
-                  <Box>
-                    <Heading mb={2}>Discover New Music</Heading>
-                    <Text>
-                      This app uses{" "}
-                      <Link as={"b"} href="https://developer.spotify.com/">
-                        Spotify's API{" "}
-                      </Link>
-                      to discover new music based on your preferences.
-                    </Text>
-                  </Box>
-                )}
-
-                <Box flexGrow={1}>
-                  {tracks ? (
-                    <Box height="100%" display="flex" flexDirection="column">
-                      <Box>
-                        <Heading size="md" mb={2}>
-                          Here are your tracks.
-                        </Heading>
-                        <Text>
-                          You can listen through the previews and add them to
-                          your playlists.
-                        </Text>
-                        <Text display="flex" alignItems="center">
-                          Or click here to
-                          <Button
-                            variant="ghost"
-                            mx={4}
-                            size="sm"
-                            onClick={onOpen}
-                          >
-                            Generate
-                          </Button>{" "}
-                          a new playlist.
-                        </Text>
-                      </Box>
-                      <Box flexGrow={1} my={4}>
+            <Box height="100%" display="flex" flexDir="column">
+              <Box flexGrow={1}>
+                <Grid
+                  templateColumns="repeat(12, 1fr)"
+                  height="100%"
+                  columnGap="25"
+                >
+                  <GridItem colSpan={[12, 12, 12, 9]}>
+                    {tracks && (
+                      <>
                         <TrackGrid
                           tracks={tracks}
                           playingIndex={playingTrackIndex}
                           onClick={handleTrackIndex}
-                          refresh={handleRefresh}
                         />
-                      </Box>
-                      <GeneratePlaylist
-                        open={isOpen}
-                        onClose={onClose}
-                        tracks={tracks}
-                      />
-                    </Box>
-                  ) : (
-                    <RecForm setTracks={handleSetTracks} />
-                  )}
-                </Box>
-                <Player
-                  bgPaper={bgPaper}
-                  disabled={!Boolean(tracks)}
-                  handleIsPlaying={handleIsPlaying}
-                  handlePlay={handlePlay}
-                  handleSetVolume={handleSetVolume}
-                  isPlaying={isPlaying}
-                  onEnded={onEnded}
-                  playingTrackIndex={playingTrackIndex}
-                  track={currentTrack}
-                  volume={volume}
-                />
+                        <GeneratePlaylist
+                          open={isOpen}
+                          onClose={onClose}
+                          tracks={tracks}
+                        />
+                      </>
+                    )}
+                  </GridItem>
+                  <GridItem colSpan={[0, 0, 0, 3]} zIndex={2} height="100%">
+                    <RecForm setTracks={setTracks} bgPaper={bgPaper} />
+                  </GridItem>
+                </Grid>
               </Box>
-            )}
+              <Player
+                bgPaper={bgPaper}
+                disabled={!Boolean(tracks)}
+                handleIsPlaying={handleIsPlaying}
+                handlePlay={handlePlay}
+                handleSetVolume={handleSetVolume}
+                isPlaying={isPlaying}
+                onEnded={onEnded}
+                playingTrackIndex={playingTrackIndex}
+                track={currentTrack}
+                volume={volume}
+              />
+            </Box>
           </Container>
         </Box>
       )}

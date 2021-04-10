@@ -37,7 +37,6 @@ const GeneratePlaylist: React.FC<GeneratePlaylistProps> = ({
   }, [tracks]);
 
   const [session, loading] = useSession();
-  const nameRef = useRef<HTMLInputElement | null>(null);
 
   const toast = useToast();
   const [sending, setSending] = useState(false);
