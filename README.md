@@ -19,4 +19,4 @@
   </p>
 </p>
 
-To run it please proivde your own .env file with SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
+To run it please provide your own .env file with SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
