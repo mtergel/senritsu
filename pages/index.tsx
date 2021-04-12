@@ -13,22 +13,27 @@ import {
   Grid,
   GridItem,
   Heading,
-  Link,
-  Text,
   VStack,
 } from "@chakra-ui/layout";
 import { usePalette } from "react-palette";
 import { useColorModeValue } from "@chakra-ui/color-mode";
 import Header from "../components/layout/components/Header";
-import { Button } from "@chakra-ui/button";
+import { Button, IconButton } from "@chakra-ui/button";
 import { Image } from "@chakra-ui/image";
 import RecForm from "../components/generate/RecForm";
-import { CircularProgress } from "@chakra-ui/progress";
 import TrackGrid from "../components/trackGrid/TrackGrid";
 import Player from "../components/player/Player";
 import GeneratePlaylist from "../components/generate/GeneratePlaylist";
 import { useDisclosure } from "@chakra-ui/hooks";
-
+import Loader from "react-loader-spinner";
+import { HiSearch } from "react-icons/hi";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 const hostname =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3000"
@@ -113,7 +118,7 @@ interface MainComponentProps {
 }
 const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
   const [session, loading] = useSession();
-  const { data, loading: colorLoading, error } = usePalette(
+  const { data, loading: colorLoading } = usePalette(
     image ? image.urls.small : ""
   );
 
@@ -127,9 +132,14 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
 
   const [tracks, setTracks] = useState<null | any[]>(null);
 
-  const handleSetTracks = useCallback((values: any[]) => {
+  const handleSetTracks = (values: any[]) => {
+    setPlayingTrackIndex(null);
+    handleIsPlaying(false);
+
+    setTracks(null);
+
     setTracks(values);
-  }, []);
+  };
 
   const [playingTrackIndex, setPlayingTrackIndex] = useState<number | null>(
     null
@@ -182,6 +192,12 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
 
   const { isOpen, onClose, onOpen } = useDisclosure();
 
+  const {
+    isOpen: mobileOpen,
+    onClose: mobileOnclose,
+    onOpen: mobileOnOpen,
+  } = useDisclosure();
+
   return (
     <Box
       w="100%"
@@ -195,7 +211,7 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
       <Header />
       {loading ? (
         <Center py={6}>
-          <CircularProgress isIndeterminate />
+          <Loader type="Bars" height={80} width={80} color={textColor} />
         </Center>
       ) : (
         <Box display="flex" flexDirection="column" flexGrow={1} pb={[1, 1, 6]}>
@@ -240,47 +256,86 @@ const MainComponent: React.FC<MainComponentProps> = ({ image }) => {
                 </Button>
               </Center>
             )}
-            <Box height="100%" display="flex" flexDir="column">
-              <Box flexGrow={1}>
-                <Grid
-                  templateColumns="repeat(12, 1fr)"
-                  height="100%"
-                  columnGap="25"
-                >
-                  <GridItem colSpan={[12, 12, 12, 9]}>
-                    {tracks && (
-                      <>
-                        <TrackGrid
-                          tracks={tracks}
-                          playingIndex={playingTrackIndex}
-                          onClick={handleTrackIndex}
+            {session && (
+              <Box height="100%" display="flex" flexDir="column">
+                <Box flexGrow={1} position="relative">
+                  <Grid
+                    templateColumns="repeat(12, 1fr)"
+                    height="100%"
+                    columnGap="25"
+                  >
+                    <GridItem colSpan={[12, 12, 12, 9]}>
+                      {tracks ? (
+                        <>
+                          <TrackGrid
+                            tracks={tracks}
+                            playingIndex={playingTrackIndex}
+                            onClick={handleTrackIndex}
+                          />
+
+                          <GeneratePlaylist
+                            open={isOpen}
+                            onClose={onClose}
+                            tracks={tracks}
+                          />
+                        </>
+                      ) : (
+                        <Heading size="md">Try searching !</Heading>
+                      )}
+                    </GridItem>
+                    <GridItem
+                      colSpan={[0, 0, 0, 3]}
+                      display={["none", "none", "none", "block"]}
+                      zIndex={2}
+                      height="100%"
+                    >
+                      <RecForm setTracks={handleSetTracks} />
+                    </GridItem>
+                  </Grid>
+                  <IconButton
+                    display={[
+                      "inline-flex",
+                      "inline-flex",
+                      "inline-flex",
+                      "none",
+                    ]}
+                    position="absolute"
+                    isRound
+                    variant="solid"
+                    colorScheme="green"
+                    aria-label="search options"
+                    icon={<HiSearch />}
+                    right={["24px", "24px", "48px"]}
+                    bottom={["24px", "24px", "24px"]}
+                    onClick={mobileOnOpen}
+                  />
+                  <Modal isOpen={mobileOpen} onClose={mobileOnclose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalCloseButton />
+                      <ModalBody bg="transparent">
+                        <RecForm
+                          setTracks={handleSetTracks}
+                          inModal={true}
+                          modalOnClose={mobileOnclose}
                         />
-                        <GeneratePlaylist
-                          open={isOpen}
-                          onClose={onClose}
-                          tracks={tracks}
-                        />
-                      </>
-                    )}
-                  </GridItem>
-                  <GridItem colSpan={[0, 0, 0, 3]} zIndex={2} height="100%">
-                    <RecForm setTracks={setTracks} bgPaper={bgPaper} />
-                  </GridItem>
-                </Grid>
+                      </ModalBody>
+                    </ModalContent>
+                  </Modal>
+                </Box>
+                <Player
+                  disabled={!Boolean(tracks)}
+                  handleIsPlaying={handleIsPlaying}
+                  handlePlay={handlePlay}
+                  handleSetVolume={handleSetVolume}
+                  isPlaying={isPlaying}
+                  onEnded={onEnded}
+                  playingTrackIndex={playingTrackIndex}
+                  track={currentTrack}
+                  volume={volume}
+                />
               </Box>
-              <Player
-                bgPaper={bgPaper}
-                disabled={!Boolean(tracks)}
-                handleIsPlaying={handleIsPlaying}
-                handlePlay={handlePlay}
-                handleSetVolume={handleSetVolume}
-                isPlaying={isPlaying}
-                onEnded={onEnded}
-                playingTrackIndex={playingTrackIndex}
-                track={currentTrack}
-                volume={volume}
-              />
-            </Box>
+            )}
           </Container>
         </Box>
       )}

@@ -26,6 +26,7 @@ import {
   ModalCloseButton,
   CircularProgress,
   useToast,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import axios from "axios";
@@ -35,7 +36,6 @@ import PlaylistItem from "../playlist/PlaylistItem";
 
 interface PlayerProps {
   volume: number;
-  bgPaper: string;
   isPlaying: boolean;
   handleIsPlaying: (value: boolean) => void;
   track: any;
@@ -47,7 +47,6 @@ interface PlayerProps {
 }
 const Player: React.FC<PlayerProps> = ({
   volume,
-  bgPaper,
   isPlaying,
   handleIsPlaying,
   track,
@@ -61,6 +60,7 @@ const Player: React.FC<PlayerProps> = ({
 
   const [hovered, setHovered] = useState(false);
   const toggleHover = () => setHovered(!hovered);
+  const bgPaper = useColorModeValue("whiteAlpha.800", "blackAlpha.700");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 

@@ -59,7 +59,7 @@ const TrackGrid: React.FC<TrackGridProps> = memo(
                   src={i.album.images[1].url}
                   width={["280px", "280px", "180px"]}
                   height={["280px", "280px", "180px"]}
-                  alt={i.name}
+                  alt={i.hasOwnProperty("name") ? i.name : ""}
                   objectFit="cover"
                 />
                 <Box
@@ -118,7 +118,7 @@ const TrackGrid: React.FC<TrackGridProps> = memo(
                           noOfLines={2}
                           wordBreak="break-word"
                         >
-                          {i.name}
+                          {i.hasOwnProperty("name") ? i.name : ""}
                         </Heading>
                         <Flex wrap="wrap" justifyContent="center">
                           {i.artists.map((a) => (
@@ -150,16 +150,6 @@ const TrackGrid: React.FC<TrackGridProps> = memo(
               </GridItem>
             ))}
           </Grid>
-          {/* <Center display="flex" alignItems="center" mt={"18px"}>
-            <Heading size="md" textAlign="center" mr={2}>
-              Done listenting?
-            </Heading>
-            <IconButton
-              onClick={refresh}
-              aria-label="Refresh"
-              icon={<MdRefresh fontSize="24px" />}
-            />
-          </Center> */}
         </Box>
       </Scrollbar>
     );
